@@ -19,19 +19,22 @@ img {
 <script>
 	$(function() {
 		$("#datepicker").datepicker();
-		$("#accordion").accordion();
+		$("#accordion").accordion({
+			autoHeight: false,
+			event: "mouseover"
+		});
 	});
 </script>
 
 <div id='accordion'>
-  <h3>Active Tabs today</h3>
+	<h3><a href='#'>Active Tabs today</a></h3>
   <div id='today-list'>
     <ul>
       <li>test</li>
     </ul>
     Open all
   </div>
-<h3>Close tab and show on</h3>
+  <h3><a href='#'>Close tab and show on</a></h3>
   <div id='close'>
     <ul>
       <li>GTUG (1. March 2010) (x)</li>
@@ -40,7 +43,7 @@ img {
     </ul>
     <div id='datepicker'></div>
   </div>
-<h3>Tickler Dashboard</h3>
+  <h3><a href='#'>Tickler Dashboard</a></h3>
   <div>
     <ul>
       <li><a href='http://www.amazon.de'>Amazon</a></li>
