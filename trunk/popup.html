@@ -19,30 +19,31 @@ img {
 <script>
 	$(function() {
 		$("#datepicker").datepicker();
+		$("#accordion").accordion();
 	});
 </script>
 
-<div id='today'>
-<h1>Active Tabs today</h1>
-<div id='today-list'>
-<ul>
-	<li>test</li>
-</ul>
-Open all
+<div id='accordion'>
+  <h3>Active Tabs today</h3>
+  <div id='today-list'>
+    <ul>
+      <li>test</li>
+    </ul>
+    Open all
+  </div>
+<h3>Close tab and show on</h3>
+  <div id='close'>
+    <ul>
+      <li>GTUG (1. March 2010) (x)</li>
+      <li>Birthday (25. February 2011) (x)</li>
+      <li>Define new (optional): <input value=''></li>
+    </ul>
+    <div id='datepicker'></div>
+  </div>
+<h3>Tickler Dashboard</h3>
+  <div>
+    <ul>
+      <li><a href='http://www.amazon.de'>Amazon</a></li>
+    </ul>
+  </div>
 </div>
-</div>
-<div id='close'>
-<h1>Close tab and show on</h1>
-<form>
-	<input>
-</form>
-<div id='datepicker'></div>
-</div>
-<div id='dashboard'>
-<h1>Tickler Dashboard</h1>
-<ul>
-	<li>test</li>
-</ul>
-</div>
-
-Test
