@@ -2,6 +2,11 @@
 <head>
 <script>
 
+// TODO Der SplashScreen (hier options.html) sollte nur einmal nach Installation aufgerufen werden.
+// Hierzu in LocalStorage mit Mikhail's Funktionen einen Flag abfragen bzw setzen. Siehe Bsp "Google Similar Page Extension".
+chrome.tabs.create( {url : "options.html"});
+
+
 function getCurrentDateTime() {
 	var currentDateTime = new Date();
 	
