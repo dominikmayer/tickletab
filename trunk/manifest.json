@@ -2,6 +2,8 @@
 	"name": "TickleTab",
 	"version": "0.0.1",
     "description": "A Google Chrome Extension that implements Ticklers for Tabs.",
+    
+    "options_page": "options.html",
 
     "background_page": "background.html",
     
