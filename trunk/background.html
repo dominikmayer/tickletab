@@ -2,6 +2,18 @@
 <head>
 <script>
 
+function getCurrentDateTime() {
+	var currentDateTime = new Date();
+	
+	var year = currentDateTime.getFullYear();
+	var month = currentDateTime.getMonth() + 1;
+	var day = currentDateTime.getDate();
+	var hour = currentDateTime.getHours();
+	var minute = currentDateTime.getMinutes();
+	
+	return year + " " + month + " " + day + " " + hour + " " + minute;
+} 
+
 </script>
 </head>
 </html>
