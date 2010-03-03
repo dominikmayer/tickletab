@@ -1,0 +1,71 @@
+<html>
+<head>
+<script type="text/javascript">
+// local storage
+var st = chrome.extension.getBackgroundPage().getLocalStorage();
+
+// logging
+function log(txt) {
+   console.log(txt);
+}
+
+function add() {
+        log("add");     	     
+	st.addTickleTab(document.getElementById("key").value, document.getElementById("val").value, document.getElementById("title").value);
+	updateContent();
+}
+function remove() {
+	log("remove");
+	st.removeTickleTabs(document.getElementById("key").value, document.getElementById("val").value);
+	updateContent();
+}
+function removeByKey() {
+	log("remove by key");
+	st.removeTickleTabs(document.getElementById("key").value);
+	updateContent();
+}
+function update() {
+        log("update");     	     
+	st.addTickleTab(document.getElementById("key").value, document.getElementById("val").value, document.getElementById("title").value);
+	updateContent();
+}
+function updateContent() {
+	log("update content");
+	var t = "";		
+	
+	for(var i = 0, a = st.getAllTickleTabs(), l = a.length; i < l; i++ ) {
+		var x = a[i];
+		log("tickle tab " + x);
+		t += x.key + " -> " + JSON.stringify(x);
+		t += "<br/>";
+	}
+	
+	if (t == "") {
+		document.getElementById("content").innerHTML = "empty content";
+	} else {
+		document.getElementById("content").innerHTML =  t;
+	}
+}
+function clearLocalStorage() {
+	st.clear();
+	updateContent();
+}
+
+</script>
+</head>
+<body onload="updateContent()">
+	<table>
+	<tr>
+	<td>Key: <input type="text" id="key"/></td>
+	<td>Url: <input type="text" id="val"/></td>
+	<td>Title: <input type="text" id="title"/></td>
+	</tr>
+	<tr><td colspan="3"><a href="javascript:add();">Add</a> 
+	                    <a href="javascript:update();">Update</a> 
+		            <a href="javascript:remove();">Remove</a> 
+		            <a href="javascript:removeByKey();">Remove by Key</a> 
+	                    <a href="javascript:clearLocalStorage();">Clear Storage</a></td></tr>
+	</table>
+	<div id="content"/>
+</body>
+</html>

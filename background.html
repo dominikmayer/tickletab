@@ -1,7 +1,140 @@
 <html>
 <head>
-<script>
+<script type="text/javascript">
 
+// logging
+function log(txt) {
+   console.log(txt);
+}
+
+     // used to indicate tickle namespace within the storage 
+     var KEY_PREFIX = "tickle_";
+
+     /**
+      * convert object to string (JSON) and save it
+      */
+     Storage.prototype.setObject = function(key, value) {
+       this.setItem(key, JSON.stringify(value));
+     }
+     
+     /**
+      * @return JSON obejct creates from local storage saved value  
+      */
+     Storage.prototype.getObject = function(key) {
+       var value = this.getItem(key);
+       if (value == null) {
+         return null;
+       } else {           
+         return JSON.parse(value);
+       }
+     }     
+     
+     
+     /**
+      * add tickletab to storage
+      *
+      * @param key - YYYYMMDD
+      * @param url - tab url
+      * @param tabtitle - string title
+      */
+     Storage.prototype.addTickleTab = function(key, url, tabtitle) {
+     	if (key == undefined || key == null || key == "" ) {
+     	     return "empty key param";
+     	}
+     	if ( url == undefined || url == null || url == "") {
+     	     return "empty url param";
+     	}
+     	if (tabtitle == undefined || tabtitle == null || tabtitle == "" ) {
+     	     return "empty tabtitle param";
+     	}
+     	
+     	var a = this.getObject(KEY_PREFIX + key);     
+     	   
+     	log("saved value : " + a); 
+     	
+     	if ( a == null ) {
+     		// make new one 
+     		log("make new for key: " + key); 
+     		a = [];
+		a.push({'url' : url , 'title' : tabtitle});     		
+     	} else {
+     		// add to the existing one
+		// merge if the url is the same
+		var p = null;
+
+		for(var i = 0, l = a.length; i < l; i++ ) {
+			var x = a[i];
+			if (x.url == url) {
+				p = x; 
+				break;
+			}
+		}
+
+		log("tickle for url : " + url + " = " + p); 
+		
+		if( p == null) {
+			// append new one
+			a.push({'url' : url , 'title' : tabtitle}); 
+		} else {			
+			p.title = tabtitle; 
+		}     		
+     	}
+     	this.setObject(KEY_PREFIX + key, a);
+     }
+
+     /**
+      * remove tickletabs
+      *
+      * @param key - YYYYMMDD
+      * @param url (optional) - tab url to remove
+      */
+     Storage.prototype.removeTickleTabs = function(key, url) {
+     	if (key == undefined || key == null || key == "" ) {
+     	     return "empty key param";
+     	}
+     	if ( url == undefined || url == null || url == "") {
+     		log("remove all tickletabs for key : " + key);
+     		this.removeItem(KEY_PREFIX + key);
+     	} else {
+     		log("remove tickletabs for url : " + url);
+     		var a = this.getObject(KEY_PREFIX + key);     
+     		if (a != null) {
+     			var r = [];
+
+     			for(var i = 0, l = a.length; i < l; i++ ) {
+     				var x = a[i];
+     				if (x.url != url) {
+     					r.push(x); 
+				}
+			}
+			a = r;
+     		}
+     		this.setObject(KEY_PREFIX + key, a);
+     	}
+     }
+
+     
+     /**
+      * @return all tickletabs from local storage
+      */
+      Storage.prototype.getAllTickleTabs = function() {
+      	      var res = [];
+      	      for(var i = 0, l = this.length; i < l; i++) {
+      	      	      var y = this.key(i);
+      	      	      // begin with 
+      	      	      if (y.indexOf(KEY_PREFIX) == 0 ) {
+      	      	      	      res.push({'key': y , 'value' : this.getObject(y)});
+      	      	      }
+      	      }
+      	      
+      	      return res;
+      }
+     
+      
+      function getLocalStorage() {
+      	     return window.localStorage;
+      }
+          
 // TODO Der SplashScreen (hier options.html) sollte nur einmal nach Installation aufgerufen werden.
 // Hierzu in LocalStorage mit Mikhail's Funktionen einen Flag abfragen bzw setzen. Siehe Bsp "Google Similar Page Extension".
 chrome.tabs.create( {url : "options.html"});
@@ -17,8 +150,8 @@ function getCurrentDateTime() {
 	var minute = currentDateTime.getMinutes();
 	
 	return year + " " + month + " " + day + " " + hour + " " + minute;
-} 
-
+}      
+     
 </script>
 </head>
 </html>
