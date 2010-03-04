@@ -1,8 +1,8 @@
 <html>
 <head>
 <script type="text/javascript">
-// local storage
-var st = chrome.extension.getBackgroundPage().getLocalStorage();
+// my storage
+var STORAGE = chrome.extension.getBackgroundPage().STORAGE;
 
 // logging
 function log(txt) {
@@ -11,31 +11,34 @@ function log(txt) {
 
 function add() {
         log("add");     	     
-	st.addTickleTab(document.getElementById("key").value, document.getElementById("val").value, document.getElementById("title").value);
+	STORAGE.addTickleTab(document.getElementById("key").value, document.getElementById("val").value, document.getElementById("title").value);
 	updateContent();
 }
 function remove() {
 	log("remove");
-	st.removeTickleTabs(document.getElementById("key").value, document.getElementById("val").value);
+	STORAGE.removeTickleTabs(document.getElementById("key").value, document.getElementById("val").value);
 	updateContent();
 }
 function removeByKey() {
 	log("remove by key");
-	st.removeTickleTabs(document.getElementById("key").value);
+	STORAGE.removeTickleTabs(document.getElementById("key").value);
 	updateContent();
 }
 function update() {
         log("update");     	     
-	st.addTickleTab(document.getElementById("key").value, document.getElementById("val").value, document.getElementById("title").value);
+	STORAGE.addTickleTab(document.getElementById("key").value, document.getElementById("val").value, document.getElementById("title").value);
 	updateContent();
 }
-function updateContent() {
-	log("update content");
-	var t = "";		
+function updateContent(a) {
+	log("updateContent(" + a + ")");
+        if ( a == null ) {
+          a = STORAGE.getAllTickleTabs();
+        }
+        
+	var t = "";
 	
-	for(var i = 0, a = st.getAllTickleTabs(), l = a.length; i < l; i++ ) {
+	for(var i = 0, l = a.length; i < l; i++ ) {
 		var x = a[i];
-		log("tickle tab " + x);
 		t += x.key + " -> " + JSON.stringify(x);
 		t += "<br/>";
 	}
@@ -47,8 +50,21 @@ function updateContent() {
 	}
 }
 function clearLocalStorage() {
-	st.clear();
+	STORAGE.clear();
 	updateContent();
+}
+function getTickleTabs() {
+	var k = document.getElementById("key").value;
+	if (k == "") {
+		updateContent();
+	} else {
+		var x = STORAGE.getTickleTabs(k);
+		if (x == null) {
+			document.getElementById("content").innerHTML =  "empty content";
+		} else {
+			updateContent(x);
+		}
+	}
 }
 
 </script>
@@ -64,7 +80,10 @@ function clearLocalStorage() {
 	                    <a href="javascript:update();">Update</a> 
 		            <a href="javascript:remove();">Remove</a> 
 		            <a href="javascript:removeByKey();">Remove by Key</a> 
-	                    <a href="javascript:clearLocalStorage();">Clear Storage</a></td></tr>
+	                    <a href="javascript:clearLocalStorage();">Clear Storage</a>
+	                    <a href="javascript:getTickleTabs();">Get TickleTabs</a>
+	     </td>
+	</tr>
 	</table>
 	<div id="content"/>
 </body>
