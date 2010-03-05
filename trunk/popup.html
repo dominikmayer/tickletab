@@ -26,7 +26,6 @@ img {
 					firstDay: 1, 
 					changeFirstDay: false,
 					onSelect : function (dateText) {
-						console.log("date selected : " + dateText);
 						chrome.tabs.getSelected(focusedWindowId, 
 									function ( tab) {
 										chrome.extension.getBackgroundPage().STORAGE.addTickleTab(dateText, tab.url, tab.title);
@@ -76,30 +75,59 @@ img {
 	};
 
 	function updateTodayList() {
-		var dt = getCurrentDateAsKey();
-		console.log("current date " + dt);
-		var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(dt);
+		var key = getCurrentDateAsKey();
+		var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
 		
-		var t = "";
-	
-		for(var i = 0, l = a.length; i < l; i++ ) {
-			// key -> [{url, title}]
-			var b = a[i].value;
-			
-			for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
-			// key -> [{url, title}]
-				var y = b[ii];
-				t +=['<li><a href="', y.url ,'">',y.title, '</a>', '</li>'].join();
-			}
-		}
-	
-		if (t == "") {
-			document.getElementById("today-list-content").innerHTML = "no tabs for today";
-		} else {
-			document.getElementById("today-list-content").innerHTML =  t;
-		}
+		var t = document.getElementById("today-list-content")
 
+		if (a != null) {		
+			// remove all child nodes 
+			t.innerHTML = "";
+			
+			for(var i = 0, l = a.length; i < l; i++ ) {
+				// key -> value :[{url, title}]
+				var ai = a[i];
+
+				var b = ai.value;
+				if (b != null) {
+					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
+						//{url, title}
+						var y = b[ii];
+						var kb = ai.key;
+						var li = document.createElement('li');
+						var ach = document.createElement('a');
+						ach.href = 'javascript:void(0)';
+						ach.onclick = function () {
+							openTickleTab(kb, y.url);
+						};
+						ach.appendChild(document.createTextNode(y.title));
+						li.appendChild(ach);
+						t.appendChild(li);
+					}
+				}
+			}
+		} else {
+			t.innerHTML = "no tabs for today";
+		}
+	
 	};
+	
+	function openTickleTab(key, url) {
+		try {
+			chrome.tabs.create({
+					'windowId' : focusedWindowId,
+					'url' : url,
+					'selected' : true
+			});
+			
+			// remove tickle tab from storage
+			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
+		} catch (e) {
+			alert(e);
+		}
+		// close self
+		// window.close();
+	}
 	
 </script>
 
