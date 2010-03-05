@@ -126,7 +126,13 @@ var STORAGE = function () {
      	     	     	     	     }
      	     	     	     	     a = r;
      	     	     	     }
-     	     	     	     this.setObject(KEY_PREFIX + key, a);
+     	     	     	     if (a.length == 0) {
+     	     	     	     	     // remove item if there are no elements 
+     	     	     	     	     st.removeItem(KEY_PREFIX + key);
+     	     	     	     } else {
+				     // set new content     	     	     	     	     
+     	     	     	     	     this.setObject(KEY_PREFIX + key, a);
+     	     	     	     }
      	     	     }
      	     }, 
      	     
