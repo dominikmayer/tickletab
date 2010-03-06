@@ -78,9 +78,10 @@ img {
 		var key = getCurrentDateAsKey();
 		var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
 		
-		var t = document.getElementById("today-list-content")
+		var t = document.getElementById("today-list-content");
+		var tt = document.getElementById("today-list-actions");
 
-		if (a != null) {		
+		if (a != null && a.length > 0) {		
 			// remove all child nodes 
 			t.innerHTML = "";
 			
@@ -97,20 +98,36 @@ img {
 						var li = document.createElement('li');
 						var ach = document.createElement('a');
 						ach.href = 'javascript:void(0)';
-						ach.onclick = function () {
-							openTickleTab(kb, y.url);
-						};
+						ach.onclick = bindOpenTickleTab(kb, y.url);
 						ach.appendChild(document.createTextNode(y.title));
 						li.appendChild(ach);
 						t.appendChild(li);
 					}
 				}
 			}
+			tt.innerHTML = "<a href='javascript:openAllTickleTabs();'>Open All</a>";
 		} else {
 			t.innerHTML = "no tabs for today";
+			tt.innerHTML = ""; 
 		}
 	
 	};
+	
+	
+	function bindOpenTickleTab(key, url) {
+		return function() {
+			openTickleTab(key, url);
+		};
+	}
+	
+	function openAllTickleTabs() {
+		// call on click for each node
+		var t = document.getElementById("today-list-content");
+		var a = t.childNodes;
+		for(var i = 0, l = a.length; i < l; i++ ) {
+			a[i].childNodes[0].onclick();
+		}
+	}
 	
 	function openTickleTab(key, url) {
 		try {
@@ -138,7 +155,9 @@ img {
     <ul id='today-list-content'>
       <li>test</li>
     </ul>
-    Open all
+    <div id='today-list-actions'>
+      Open All
+    </div>
   </div>
   <h3><a href='#'>Close tab and show on</a></h3>
   <div id='close'>
