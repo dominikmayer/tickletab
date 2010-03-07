@@ -1,0 +1,19 @@
+body {
+	font-size:100%;
+}
+
+h1 {
+	text-align: center;
+}
+
+p {
+	text-align: left;
+	font-family: arial, sans-serif;
+	font-size: 0.813em;
+}
+
+.options {
+	font-family: arial, sans-serif;
+	font-size: 0.813em;
+}
+	
