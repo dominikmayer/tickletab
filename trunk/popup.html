@@ -62,6 +62,7 @@ input.hasDatepicker:hover{
 			});
 		$("#accordion").accordion({
 			autoHeight: false,
+			fillSpace: true,
 			event: "mouseover"
 		});
 	});
@@ -302,7 +303,7 @@ input.hasDatepicker:hover{
 </script>
 
 <body onload="onLoad()">
-	<div id='accordion'>
+	<div id='accordion' style='height:400px'>
 		<h3><a href='#'>Active Tabs today</a></h3>
 		<div id='today-list'>
 			<table id='today-list-content'>
