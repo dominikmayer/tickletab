@@ -269,8 +269,7 @@ input.hasDatepicker:hover{
 				// key -> value: [label1, label 2]
 				var a = data[i];
 				var b = a.value;
-				// TODO - format date
-				var datestr = a.key;
+				var datestr = a.key.substr(0,4) + '-' + a.key.substr(4,2) + '-' + a.key.substr(6,2);
 				if (b != null) {
 					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
 						var label = b[ii]; 
