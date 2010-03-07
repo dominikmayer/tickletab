@@ -5,6 +5,7 @@
 var STORAGE = function () {
 	// private functions and properties
 	var KEY_PREFIX = "tickle_";
+	var DATE_LABEL_KEY_PREFIX = "dlabel_tickle_";
 	var st = window.localStorage;
 	
 	var sortfn = function (a, b) {
@@ -21,7 +22,7 @@ var STORAGE = function () {
      	 var log = function (txt) {
      	 	 // console.log(txt);
      	 };
-
+     	 
 	return {
 		
 		clear : function() {
@@ -46,7 +47,7 @@ var STORAGE = function () {
      	     	     	     return JSON.parse(value);
      	     	     }
      	     	}, 
-     	     	
+
      	     	/**
      	     	* add tickletab to storage
      	     	*
@@ -184,6 +185,108 @@ var STORAGE = function () {
      	     	     res.sort(sortfn);
      	     	     
      	     	     return res;
+     	     },
+     	     
+     	     // datum label functions
+     	     
+     	     /**
+     	      * @return an array of all defined data labels {key : date, value: [text, ...] }  
+     	      */
+     	     getDataLabels : function(key) {
+     	     	     var res = [];
+     	     	     for(var i = 0, l = st.length; i < l; i++) {
+     	     	     	     var y = st.key(i);
+     	     	     	     // begin with
+     	     	     	     if (y.indexOf(DATE_LABEL_KEY_PREFIX) == 0 ) {
+     	     	     	     	     var x = y.substr(DATE_LABEL_KEY_PREFIX.length);
+     	     	     	     	     if ( key == null || x <= key ) {
+     	     	     	     	     	     res.push({'key': x, 'value' : this.getObject(y)});     	     	     	     	     	     
+     	     	     	     	     }
+     	     	     	     }
+     	     	     }
+     	     	     res.sort(sortfn);
+     	     	     
+     	     	     return res;
+     	     }, 
+     	     
+     	     	/**
+     	     	* add data label to storage
+     	     	*
+     	     	* @param key - YYYYMMDD
+     	     	* @param title
+     	     	*/
+     	     	addDateLabel : function(key, title) {
+     	     	     if ( key == null || key == "" ) {
+     	     	     	     return "empty key param";
+     	     	     }
+     	     	     if ( title == null || title == "" ) {
+     	     	     	     return "empty title param";
+     	     	     }     	
+     	     	     
+     	     	     var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
+     	     	     
+     	     	     if ( a == null ) {
+     	     	     	     // make new one 
+     	     	     	     a = [];
+     	     	     	     a.push(title);     		
+     	     	     } else {
+     	     	     	     // add to the existing one
+     	     	     	     var p = null;
+     	     	     	     
+     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
+     	     	     	     	     var x = a[i];
+     	     	     	     	     if (x == title) {
+     	     	     	     	     	     p = x; 
+     	     	     	     	     	     break;
+     	     	     	     	     }
+     	     	     	     }
+     	     	     	     
+     	     	     	     if( p == null) {
+     	     	     	     	    // add missing
+     	     	     	     	    a.push(title);
+
+     	     	     	     }
+     	     	     	          	     	     	     	     
+
+     	     	     }
+     	     	     this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
+     	       },
+     	       
+     	     /**
+     	     * remove data label
+     	     *
+     	     * @param key - YYYYMMDD
+     	     * @param title (optional) - date label to remove
+     	     */
+     	     removeDateLabels : function(key, title) {
+     	     	     if ( key == null || key == "" ) {
+     	     	     	     return "empty key param";
+     	     	     }
+     	     	     if ( title == null || title == "") {
+     	     	     	     // log("remove all tickletabs for key : " + key);
+     	     	     	     st.removeItem(DATE_LABEL_KEY_PREFIX + key);
+     	     	     } else {
+     	     	     	     // log("remove tickletabs for url : " + url);
+     	     	     	     var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
+     	     	     	     if (a != null) {
+     	     	     	     	     var r = [];
+     	     	     	     	     
+     	     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
+     	     	     	     	     	     var x = a[i];
+     	     	     	     	     	     if (x != title) {
+     	     	     	     	     	     	     r.push(x); 
+     	     	     	     	     	     }
+     	     	     	     	     }
+     	     	     	     	     a = r;
+     	     	     	     }
+     	     	     	     if (a.length == 0) {
+     	     	     	     	     // remove item if there are no elements 
+     	     	     	     	     st.removeItem(DATE_LABEL_KEY_PREFIX + key);
+     	     	     	     } else {
+				     // set new content     	     	     	     	     
+     	     	     	     	     this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
+     	     	     	     }
+     	     	     }
      	     }
      	       
 	};
