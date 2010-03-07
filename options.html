@@ -5,12 +5,62 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
 <title>Options</title>
+
+<link href="options.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
 
-Options
+<h1>
+	<img src='images/tickletab-128.png' style="vertical-align: middle" title="Tickle Tab Options" alt="Tickle Tab"> Tickle Tab Options
+</h1>
+<br>
 
+<p>TickleTab implements the Tickler idea of David Allen's GTD. 
+It saves all the tabs you don't need right now and presents them again at the specified date.</p>
+<br>
+
+<div class="options">
+	A value for an ignored option: <input id="txtOption01" type="text" oninput="markDirty()">
+</div>
+<br>
+<br>
+
+<div>
+  <button id="btnSave" onclick="save()">Save</button>
+  <button id="btnCancel" onclick="init()">Cancel</button>
+</div>
+
+<script>
+var txtOption01;
+var btnSave;
+
+init();
+
+function init() {
+  txtOption01 = document.getElementById("txtOption01");
+  btnSave = document.getElementById("btnSave");
+
+  txtOption01.value = localStorage.sOption01 || "";
+  markClean();
+}
+
+function save() {
+  localStorage.sOption01 = txtOption01.value;
+  
+  markClean();
+
+  chrome.extension.getBackgroundPage().init();
+}
+
+function markDirty() {
+  btnSave.disabled = false;
+}
+
+function markClean() {
+  btnSave.disabled = true;
+}
+</script>
 </body>
 
 </html>
