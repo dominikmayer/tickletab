@@ -200,7 +200,47 @@ if ( ! window.localStorage.already_run) {
 	
 	window.localStorage.already_run = true;
 }
-     
+
+function init(){
+	chrome.browserAction.setBadgeBackgroundColor({color:[255, 206, 10, 255]});
+	chrome.browserAction.setBadgeText({
+			text: ""});
+	startRequest();
+}
+
+function startRequest(){
+	var key = getCurrentDateAsKey();
+	var a = STORAGE.getTickleTabs(key);
+	var badgetext = "";
+	//var delay = 1800000; // half hour
+	var delay = 1000; // one second (for testing)
+
+	if (a != null && a.length > 0) {
+		badgetext = String(a[0].value.length);
+	} else {
+		badgetext = "";
+	}
+	chrome.browserAction.setBadgeText({
+			text: badgetext});
+	window.setTimeout(startRequest, 100);
+}
+
+function getCurrentDateAsKey() {
+	var d = new Date();
+	var dd = d.getDate();
+	if (dd < 10 ) {
+		dd = '0' + dd;
+	}
+	var mm = d.getMonth() + 1;
+	if (mm < 10) {
+		mm = '0' + mm;
+	}
+	return d.getFullYear() + '' + mm +'' +  dd;
+};
+
+
 </script>
 </head>
+<body onload="init()">
+</body>
 </html>
