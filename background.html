@@ -211,18 +211,22 @@ function init(){
 function startRequest(){
 	var key = getCurrentDateAsKey();
 	var a = STORAGE.getTickleTabs(key);
+	console.log(a);
+	var badgelength = 0;
 	var badgetext = "";
 	//var delay = 1800000; // half hour
 	var delay = 1000; // one second (for testing)
 
 	if (a != null && a.length > 0) {
-		badgetext = String(a[0].value.length);
-	} else {
-		badgetext = "";
+		for(var i = 0, l = a.length; i < l; i++ ) {
+			badgelength = badgelength + a[i].value.length;
+		}
 	}
+	if (badgelength != 0){
+		badgetext = String(badgelength)}
 	chrome.browserAction.setBadgeText({
 			text: badgetext});
-	window.setTimeout(startRequest, 100);
+	window.setTimeout(startRequest, delay);
 }
 
 function getCurrentDateAsKey() {

@@ -1,5 +1,10 @@
 <style>
-body {
+body{
+  min-width:357px;
+  overflow-x:hidden;
+  font-size:8pt;
+}
+table {
   min-width:357px;
   overflow-x:hidden;
   font-size:8pt;
@@ -11,6 +16,14 @@ img {
   vertical-align:middle;
   width:75px;
   height:75px;
+}
+input
+{
+	height: 19px;
+	width: 70px;
+	color: #000000;
+	background: #ffffff;
+	border: 1px solid #000000
 }
 </style>
 <link type="text/css" rel="stylesheet" href="ui-lightness/jquery-ui-1.7.2.custom.css">
@@ -25,6 +38,8 @@ img {
 					dateFormat: "yymmdd",
 					firstDay: 1, 
 					changeFirstDay: false,
+					showOtherMonths: true,
+					selectOtherMonths: true,
 					onSelect : function (dateText) {
 						chrome.tabs.getSelected(focusedWindowId, 
 									function ( tab) {
@@ -59,6 +74,7 @@ img {
 				});
 		});
 		updateTodayList();
+		updateDashboard();
 	};
 
 //	function getCurrentDateAsKey() {
@@ -80,14 +96,29 @@ img {
 		
 		var t = document.getElementById("today-list-content");
 		var tt = document.getElementById("today-list-actions");
+		console.log(a);
+		updateList(a, t, tt, 0);
 
-		if (a != null && a.length > 0) {		
+	
+	};
+
+	function updateDashboard(){
+		var a = chrome.extension.getBackgroundPage().STORAGE.getAllTickleTabs();
+
+		var t = document.getElementById("dashboard-content");
+		var tt = document.getElementById("dashboard-actions");
+
+		updateList(a, t, tt, 2);
+	}
+
+	function updateList(data, content, actions, folder){
+		if (data != null && data.length > 0) {		
 			// remove all child nodes 
-			t.innerHTML = "";
+			content.innerHTML = "";
 			
-			for(var i = 0, l = a.length; i < l; i++ ) {
+			for(var i = 0, l = data.length; i < l; i++ ) {
 				// key -> value :[{url, title}]
-				var ai = a[i];
+				var ai = data[i];
 
 				var b = ai.value;
 				if (b != null) {
@@ -95,27 +126,50 @@ img {
 						//{url, title}
 						var y = b[ii];
 						var kb = ai.key;
-						var li = document.createElement('li');
+						//var li = document.createElement('li');
+						var tr = document.createElement('tr');
+						var tdt = document.createElement('td');
+						var tdi = document.createElement('td');
 						var ach = document.createElement('a');
 						ach.href = 'javascript:void(0)';
 						ach.onclick = bindOpenTickleTab(kb, y.url);
 						ach.appendChild(document.createTextNode(y.title));
-						li.appendChild(ach);
-						t.appendChild(li);
+						tdt.appendChild(ach);
+						//li.appendChild(document.createTextNode(' '));
+						var input = document.createElement('input');
+						input.setAttribute("id", 'dpt-' + String(folder) + '-' + i + '-' + ii);
+						input.setAttribute('value', ai.key.substr(0,4)+'-'
+							+ai.key.substr(4,2) + '-' + ai.key.substr(6,2));
+						tdi.appendChild(input);
+						tr.appendChild(tdi);
+						tr.appendChild(tdt);
+						content.appendChild(tr);
+						$('#dpt-' + String(folder) + '-' + i + '-' + ii).datepicker({
+							dateFormat: 'yy-mm-dd',
+							onSelect : function(dateText){changeDate(dateText, kb, y.url, y.title)}
+						});
 					}
 				}
 			}
-			tt.innerHTML = "<a href='javascript:openAllTickleTabs();'>Open All</a>";
+			if (folder == 0){
+				actions.innerHTML = "<a href='javascript:openAllTickleTabs();'>Open All</a>";
+			}
 		} else {
 			// hide first accordion if there are no tabs
 			$("#accordion").accordion('activate', 1);
-			$(".ui-accordion-header").eq(0).hide().next().hide();
+			$(".ui-accordion-header").eq(folder).hide().next().hide();
 			//t.innerHTML = "no tabs for today";
 			//tt.innerHTML = ""; 
 		}
-	
-	};
-	
+	}
+
+	function changeDate(dateText, key, url, title){
+			var storeDate = dateText.substr(0,4)+dateText.substr(5,2)+dateText.substr(8,2);
+			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
+			chrome.extension.getBackgroundPage().STORAGE.addTickleTab(
+				storeDate, url, title);
+			window.close();
+	}
 	
 	function bindOpenTickleTab(key, url) {
 		return function() {
@@ -128,7 +182,7 @@ img {
 		var t = document.getElementById("today-list-content");
 		var a = t.childNodes;
 		for(var i = 0, l = a.length; i < l; i++ ) {
-			a[i].childNodes[0].onclick();
+			a[i].childNodes[1].childNodes[0].onclick();
 		}
 	}
 	
@@ -152,30 +206,27 @@ img {
 </script>
 
 <body onload="onLoad()">
-<div id='accordion'>
-	<h3><a href='#'>Active Tabs today</a></h3>
-  <div id='today-list'>
-    <ul id='today-list-content'>
-      <li>test</li>
-    </ul>
-    <div id='today-list-actions'>
-      Open All
-    </div>
-  </div>
-  <h3><a href='#'>Close tab and show on</a></h3>
-  <div id='close'>
-    <ul>
-      <li>GTUG (1. March 2010) (x)</li>
-      <li>Birthday (25. February 2011) (x)</li>
-      <li>Define new (optional): <input id="date-label" value=''></li>
-    </ul>
-    <div id='datepicker'></div>
-  </div>
-  <h3><a href='#'>Tickler Dashboard</a></h3>
-  <div>
-    <ul>
-      <li><a href='http://www.amazon.de'>Amazon</a></li>
-    </ul>
-  </div>
-</div>
+	<div id='accordion'>
+		<h3><a href='#'>Active Tabs today</a></h3>
+		<div id='today-list'>
+			<table id='today-list-content'>
+			</table>
+			<div id='today-list-actions'>
+			</div>
+		</div>
+		<h3><a href='#'>Close tab and show on</a></h3>
+		<div id='close'>
+			<ul>
+				<li>GTUG (1. March 2010) (x)</li>
+				<li>Birthday (25. February 2011) (x)</li>
+				<li>Define new (optional): <input id="date-label" value=''></li>
+			</ul>
+			<div id='datepicker'></div>
+		</div>
+		<h3><a href='#'>Tickler Dashboard</a></h3>
+		<div id='dashboard'>
+			<table id='dashboard-content'>
+			</table>
+		</div>
+	</div>
 </body>
