@@ -65,6 +65,9 @@ input.hasDatepicker:hover{
 			fillSpace: true,
 			event: "mouseover"
 		});
+		$("#tabs").tabs({
+			event: 'mouseover'
+		});
 	});
 	
 	function addDateLabel(key) {
@@ -303,15 +306,15 @@ input.hasDatepicker:hover{
 </script>
 
 <body onload="onLoad()">
-	<div id='accordion' style='height:400px'>
-		<h3><a href='#'>Active Tabs today</a></h3>
+	<!--<div id='accordion' style='height:400px'>
+		<h3><a href='#'>Active tabs today</a></h3>
 		<div id='today-list'>
 			<table id='today-list-content'>
 			</table>
 			<div align="right" id='today-list-actions'>
 			</div>
 		</div>
-		<h3><a href='#'>Close tab and show on</a></h3>
+		<h3><a href='#'>Close tab until</a></h3>
 		<div id='close'>
 			<div>
 			<ul id='date-labels'>
@@ -325,6 +328,34 @@ input.hasDatepicker:hover{
 		</div>
 		<h3><a href='#'>Tickler Dashboard</a></h3>
 		<div id='dashboard'>
+			<table id='dashboard-content'>
+			</table>
+		</div>
+	</div>-->
+	<div id='tabs'>
+		<ul>
+			<li><a href="#today-list">Active tabs today</a></li>
+			<li><a href="#close">Close tab until</a></li>
+			<li><a href="#dashboard">Dashboard</a></li>
+		</ul>
+		<div id="today-list">
+			<table id='today-list-content'>
+			</table>
+			<div align="right" id='today-list-actions'>
+			</div>
+		</div>
+		<div id="close">
+			<div>
+				<ul id='date-labels'>
+					<li><a href='javascript:void(0);'>GTUG (1. March 2010)</a> (<a href='javascrip:void(0)'>x</a>)</li>
+					<li>Birthday (25. February 2011) (x)</li>
+					<li>Define new (optional): <input id="date-label" value=''></li>
+				</ul>
+			<div>Define new (optional): <input id="new-date-label" value=''></div>
+			</div>
+			<div id='datepicker'></div>
+		</div>
+		<div id="dashboard">
 			<table id='dashboard-content'>
 			</table>
 		</div>
