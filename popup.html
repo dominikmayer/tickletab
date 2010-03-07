@@ -61,21 +61,21 @@ img {
 		updateTodayList();
 	};
 
-	function getCurrentDateAsKey() {
-		var d = new Date();
-		var dd = d.getDate();
-		if (dd < 10 ) {
-			dd = '0' + dd;
-		}
-		var mm = d.getMonth() + 1;
-		if (mm < 10) {
-			mm = '0' + mm;
-		}
-		return d.getFullYear() + '' + mm +'' +  dd;
-	};
+//	function getCurrentDateAsKey() {
+//		var d = new Date();
+//		var dd = d.getDate();
+//		if (dd < 10 ) {
+//			dd = '0' + dd;
+//		}
+//		var mm = d.getMonth() + 1;
+//		if (mm < 10) {
+//			mm = '0' + mm;
+//		}
+//		return d.getFullYear() + '' + mm +'' +  dd;
+//	};
 
 	function updateTodayList() {
-		var key = getCurrentDateAsKey();
+		var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
 		var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
 		
 		var t = document.getElementById("today-list-content");
@@ -107,8 +107,11 @@ img {
 			}
 			tt.innerHTML = "<a href='javascript:openAllTickleTabs();'>Open All</a>";
 		} else {
-			t.innerHTML = "no tabs for today";
-			tt.innerHTML = ""; 
+			// hide first accordion if there are no tabs
+			$("#accordion").accordion('activate', 1);
+			$(".ui-accordion-header").eq(0).hide().next().hide();
+			//t.innerHTML = "no tabs for today";
+			//tt.innerHTML = ""; 
 		}
 	
 	};
