@@ -56,19 +56,8 @@ input.hasDatepicker:hover{
 					selectOtherMonths: true,
 					minDate: 0,
 					onSelect : function (dateText) {
-						chrome.tabs.getSelected(focusedWindowId, 
-									function ( tab) {
-										chrome.extension.getBackgroundPage().STORAGE.addTickleTab(dateText, tab.url, tab.title);
-										// close tab
-										try {
-											chrome.tabs.remove(tab.id);
-										} catch (e) {
-											alert(e);
-										}
-										// close self
-										window.close();
-									}
-								);
+						addDateLabel(dateText);
+						addTickleTab(dateText);
 					}					
 			});
 		$("#accordion").accordion({
@@ -76,7 +65,32 @@ input.hasDatepicker:hover{
 			event: "mouseover"
 		});
 	});
-
+	
+	function addDateLabel(key) {
+		var t = document.getElementById("new-date-label");
+		
+		if (t.value != '') {
+			chrome.extension.getBackgroundPage().STORAGE.addDateLabel(key, t.value);
+			t.value = '';
+		}
+	};
+	
+	function addTickleTab(key) {		
+		chrome.tabs.getSelected(focusedWindowId, 
+			function ( tab) {
+				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title);
+				// close tab
+				try {
+					chrome.tabs.remove(tab.id);
+				} catch (e) {
+					alert(e);
+				}
+				// close self
+				window.close();
+			}
+			);
+	};
+	
 	var focusedWindowId = undefined;
 	var currentWindowId = undefined;
 
@@ -89,6 +103,7 @@ input.hasDatepicker:hover{
 				});
 		});
 		updateTodayList();
+		updateDateLabelsList();
 		updateDashboard();
 	};
 
@@ -199,6 +214,12 @@ input.hasDatepicker:hover{
 			openTickleTab(key, url);
 		};
 	}
+
+	function bindAddTickleTab(key) {
+		return function() {
+			addTickleTab(key);
+		};
+	}
 	
 	function openAllTickleTabs() {
 		// call on click for each node
@@ -225,6 +246,58 @@ input.hasDatepicker:hover{
 		// close self
 		// window.close();
 	}
+
+	function bindRemoveDateLabel(key, title) {
+		return function() {
+			chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(key, title);
+			updateDateLabelsList();
+		};
+	}
+	
+	// render date-labels component list
+	function updateDateLabelsList() {
+		var data = chrome.extension.getBackgroundPage().STORAGE.getDataLabels();
+		var t = document.getElementById("date-labels");
+		t.innerHTML = "";
+		if (data != null && data.length > 0 ) {
+
+			for(var i = 0, l = data.length; i < l; i++ ) {
+				// key -> value: [label1, label 2]
+				var a = data[i];
+				var b = a.value;
+				// TODO - format date
+				var datestr = a.key;
+				if (b != null) {
+					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
+						var label = b[ii]; 
+						var li = document.createElement('li');
+						var a1 = document.createElement('a');
+						a1.href = 'javascript:void(0)';
+						a1.appendChild(document.createTextNode(label +' (' + datestr 
+							 + ')'));
+						// action binding
+						a1.onclick = bindAddTickleTab(a.key);
+						
+						
+						li.appendChild(a1);
+						li.appendChild(document.createTextNode(' ('));
+						
+						var a2 = document.createElement('a');
+						a2.href = 'javascript:void(0)';
+						a2.appendChild(document.createTextNode('remove'));
+						// action binding
+						a2.onclick = bindRemoveDateLabel(a.key, label); 
+						
+						li.appendChild(a2);
+						li.appendChild(document.createTextNode(')'));
+						t.appendChild(li);
+					}
+				}
+			}
+		} else {
+			// t.innerHTML = "";
+		}
+	}
 	
 </script>
 
@@ -239,11 +312,14 @@ input.hasDatepicker:hover{
 		</div>
 		<h3><a href='#'>Close tab and show on</a></h3>
 		<div id='close'>
-			<!--<ul>
-				<li>GTUG (1. March 2010) (x)</li>
+			<div>
+			<ul id='date-labels'>
+				<li><a href='javascript:void(0);'>GTUG (1. March 2010)</a> (<a href='javascrip:void(0)'>x</a>)</li>
 				<li>Birthday (25. February 2011) (x)</li>
 				<li>Define new (optional): <input id="date-label" value=''></li>
-			</ul>-->
+			</ul>
+			<div>Define new (optional): <input id="new-date-label" value=''></div>
+			</div>
 			<div id='datepicker'></div>
 		</div>
 		<h3><a href='#'>Tickler Dashboard</a></h3>
