@@ -82,7 +82,8 @@ input.hasDatepicker:hover{
 	function addTickleTab(key) {		
 		chrome.tabs.getSelected(focusedWindowId, 
 			function ( tab) {
-				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title);
+				title = shortenTabTitle(tab.title);
+				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, title);
 				// close tab
 				try {
 					chrome.tabs.remove(tab.id);
@@ -94,6 +95,14 @@ input.hasDatepicker:hover{
 			}
 			);
 	};
+	
+	function shortenTabTitle(title) {
+		if (title.length > 35) {
+			title = title.substring(0,34) + '...';
+		}
+		
+		return title;
+	}
 	
 	var focusedWindowId = undefined;
 	var currentWindowId = undefined;
