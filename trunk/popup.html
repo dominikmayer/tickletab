@@ -350,7 +350,13 @@ input.hasDatepicker:hover{
 
 						var a2 = document.createElement('a');
 						a2.href = 'javascript:void(0)';
-						a2.appendChild(document.createTextNode('(x)'));
+						var del_icon = document.createElement('img');
+						del_icon.setAttribute("src", 'images/delete.png');
+						del_icon.setAttribute("alt", '(x)');
+						del_icon.setAttribute("title", 'Click to delete');
+						del_icon.setAttribute("width", '10px');
+						del_icon.setAttribute("height", '10px');
+						a2.appendChild(del_icon);
 						// action binding
 						a2.onclick = bindRemoveDateLabel(a.key, label); 
 						tdt.appendChild(a1);
