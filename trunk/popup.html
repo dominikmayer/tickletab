@@ -81,19 +81,30 @@ input.hasDatepicker:hover{
 	
 	function addTickleTab(key) {		
 		chrome.tabs.getSelected(focusedWindowId, 
-			function ( tab) {
+			function ( tab ) {
 				title = shortenTabTitle(tab.title);
 				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, title);
-				// close tab
-				try {
-					chrome.tabs.remove(tab.id);
-				} catch (e) {
-					alert(e);
-				}
-				// close self
-				window.close();
-			}
-			);
+
+				chrome.tabs.getAllInWindow(focusedWindowId,function(tabs){
+						if (tabs.length == 1) {
+							// open chrome://newtab to prevent chrome from closing 
+							chrome.tabs.create({
+									'windowId' : focusedWindowId,
+									'url' : 'chrome://newtab',
+									'selected' : true
+							});
+						}
+						// close tab
+						try {
+							chrome.tabs.remove(tab.id);
+						} catch (e) {
+							alert(e);
+						}
+						// close self
+						window.close();
+				});				
+				
+			});
 	};
 	
 	function shortenTabTitle(title) {
