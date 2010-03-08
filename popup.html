@@ -188,7 +188,13 @@ input.hasDatepicker:hover{
 						tdi.appendChild(input);
 						achr.href = 'javascript:void(0)';
 						achr.onclick = bindRemoveTickleTab(kb, y.url);
-						achr.appendChild(document.createTextNode('(x)'));
+						var del_icon = document.createElement('img');
+						del_icon.setAttribute("src", 'images/delete.png');
+						del_icon.setAttribute("alt", '(x)');
+						del_icon.setAttribute("title", 'Click to delete');
+						del_icon.setAttribute("width", '10px');
+						del_icon.setAttribute("height", '10px');
+						achr.appendChild(del_icon);
 						tdr.appendChild(achr);
 						tr.appendChild(tdi);
 						tr.appendChild(tdt);
