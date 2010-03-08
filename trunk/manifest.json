@@ -1,8 +1,8 @@
 {
 	"name": "TickleTab",
-	"version": "0.1",
+	"version": "0.2",
 
-	"description": "A Google Chrome Extension that implements Ticklers for Tabs.",
+	"description": "A Google Chrome Extension that implements GTD-like Ticklers for tabs.",
 	"icons": { "48": "images/tickletab-48.png",
         	  "128": "images/tickletab-128.png" },
 
