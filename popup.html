@@ -65,9 +65,9 @@ input.hasDatepicker:hover{
 			fillSpace: true,
 			event: "mouseover"
 		});
-		$("#tabs").tabs({
-			event: 'mouseover'
-		});
+		//$("#tabs").tabs({
+		//	event: 'mouseover'
+		//});
 	});
 	
 	function addDateLabel(key) {
@@ -163,7 +163,9 @@ input.hasDatepicker:hover{
 						var tr = document.createElement('tr');
 						var tdt = document.createElement('td');
 						var tdi = document.createElement('td');
+						var tdr = document.createElement('td');
 						var ach = document.createElement('a');
+						var achr = document.createElement('a');
 						ach.href = 'javascript:void(0)';
 						ach.onclick = bindOpenTickleTab(kb, y.url);
 						ach.appendChild(document.createTextNode(y.title));
@@ -175,8 +177,13 @@ input.hasDatepicker:hover{
 						input.setAttribute("readonly", 'true');
 						input.setAttribute("title", 'Click to change');
 						tdi.appendChild(input);
+						achr.href = 'javascript:void(0)';
+						achr.onclick = bindRemoveTickleTab(kb, y.url);
+						achr.appendChild(document.createTextNode('(x)'));
+						tdr.appendChild(achr);
 						tr.appendChild(tdi);
 						tr.appendChild(tdt);
+						tr.appendChild(tdr);
 						content.appendChild(tr);
 						$('#dpt-' + String(folder) + '-' + i + '-' + ii).datepicker({
 							dateFormat: 'yy-mm-dd',
@@ -212,6 +219,14 @@ input.hasDatepicker:hover{
 				storeDate, url, title);
 			window.close();
 	}
+
+	function changeLabel(oldDate, newDate, title){
+			var oldKey = oldDate.substr(0,4)+oldDate.substr(5,2)+oldDate.substr(8,2);
+			var newKey = newDate.substr(0,4)+newDate.substr(5,2)+newDate.substr(8,2);
+			chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(oldKey, title);
+			chrome.extension.getBackgroundPage().STORAGE.addDateLabel(newKey, title);
+			updateDateLabelsList();
+	}
 	
 	function bindOpenTickleTab(key, url) {
 		return function() {
@@ -222,6 +237,13 @@ input.hasDatepicker:hover{
 	function bindAddTickleTab(key) {
 		return function() {
 			addTickleTab(key);
+		};
+	}
+
+	function bindRemoveTickleTab(key, url) {
+		return function() {
+			removeTickleTab(key, url);
+			$(this).parent().parent().hide();
 		};
 	}
 	
@@ -250,6 +272,15 @@ input.hasDatepicker:hover{
 		// close self
 		// window.close();
 	}
+	
+	function removeTickleTab(key, url) {
+		try {
+			// remove tickle tab from storage
+			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
+		} catch (e) {
+			alert(e);
+		}
+	}
 
 	function bindRemoveDateLabel(key, title) {
 		return function() {
@@ -273,27 +304,43 @@ input.hasDatepicker:hover{
 				if (b != null) {
 					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
 						var label = b[ii]; 
-						var li = document.createElement('li');
+						var tr = document.createElement('tr');
+						var tdi = document.createElement('td');
+						var tdt = document.createElement('td');
+						var tdr = document.createElement('td');
+
 						var a1 = document.createElement('a');
 						a1.href = 'javascript:void(0)';
-						a1.appendChild(document.createTextNode(label +' (' + datestr 
-							 + ')'));
+						a1.appendChild(document.createTextNode(label));
 						// action binding
 						a1.onclick = bindAddTickleTab(a.key);
-						
-						
-						li.appendChild(a1);
-						li.appendChild(document.createTextNode(' ('));
-						
+
+						var input = document.createElement('input');
+						input.setAttribute("id", 'dpl-' + i + '-' + ii);
+						input.setAttribute('value', datestr);
+						input.setAttribute("readonly", 'true');
+						input.setAttribute("title", 'Click to change');
+						tdi.appendChild(input);
+
 						var a2 = document.createElement('a');
 						a2.href = 'javascript:void(0)';
-						a2.appendChild(document.createTextNode('remove'));
+						a2.appendChild(document.createTextNode('(x)'));
 						// action binding
 						a2.onclick = bindRemoveDateLabel(a.key, label); 
-						
-						li.appendChild(a2);
-						li.appendChild(document.createTextNode(')'));
-						t.appendChild(li);
+						tdt.appendChild(a1);
+						tdr.appendChild(a2);
+						tr.appendChild(tdi);
+						tr.appendChild(tdt);
+						tr.appendChild(tdr);
+						t.appendChild(tr);
+
+						$('#dpl-' + i + '-' + ii).datepicker({
+							dateFormat: 'yy-mm-dd',
+							showOtherMonths: true,
+							selectOtherMonths: true,
+							minDate: 0,
+							onSelect : function(dateText){changeLabel(datestr, dateText, label)}
+						});
 					}
 				}
 			}
@@ -316,12 +363,9 @@ input.hasDatepicker:hover{
 		<h3><a href='#'>Close tab until</a></h3>
 		<div id='close'>
 			<div>
-			<ul id='date-labels'>
-				<li><a href='javascript:void(0);'>GTUG (1. March 2010)</a> (<a href='javascrip:void(0)'>x</a>)</li>
-				<li>Birthday (25. February 2011) (x)</li>
-				<li>Define new (optional): <input id="date-label" value=''></li>
-			</ul>
-			<div>Define new (optional): <input id="new-date-label" value=''></div>
+			<table id='date-labels'>
+			</table>
+			<div>Define label (optional): <input id="new-date-label" value=''></div>
 			</div>
 			<div id='datepicker'></div>
 		</div>
