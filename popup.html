@@ -81,8 +81,7 @@ input.hasDatepicker:hover{
 	function addTickleTab(key) {		
 		chrome.tabs.getSelected(focusedWindowId, 
 			function ( tab ) {
-				title = shortenTabTitle(tab.title);
-				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, title);
+				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title);
 
 				chrome.tabs.getAllInWindow(focusedWindowId,function(tabs){
 						if (tabs.length == 1) {
@@ -108,8 +107,8 @@ input.hasDatepicker:hover{
 	};
 	
 	function shortenTabTitle(title) {
-		if (title.length > 35) {
-			title = title.substring(0,32) + '...';
+		if (title.length > 40) {
+			title = title.substring(0,37) + '...';
 		}
 		
 		return title;
@@ -188,7 +187,9 @@ input.hasDatepicker:hover{
 						var achr = document.createElement('a');
 						ach.href = 'javascript:void(0)';
 						ach.onclick = bindOpenTickleTab(kb, y.url);
-						ach.appendChild(document.createTextNode(y.title));
+						var short_title = document.createTextNode(shortenTabTitle(y.title));
+						ach.appendChild(short_title);
+						ach.setAttribute("title", y.title);
 						tdt.appendChild(ach);
 						var input = document.createElement('input');
 						input.setAttribute("id", 'dpt-' + String(folder) + '-' + i + '-' + ii);
