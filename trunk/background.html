@@ -27,6 +27,7 @@ var STORAGE = function () {
 		
 		clear : function() {
 			st.clear();
+			updateBadgeText();
 		},
 		
      	     	/**
@@ -98,6 +99,7 @@ var STORAGE = function () {
      	     	     	     }     		
      	     	     }
      	     	     this.setObject(KEY_PREFIX + key, a);
+     	     	     updateBadgeText();
      	       },
      	       
      	     /**
@@ -135,6 +137,7 @@ var STORAGE = function () {
      	     	     	     	     this.setObject(KEY_PREFIX + key, a);
      	     	     	     }
      	     	     }
+     	     	     updateBadgeText();
      	     }, 
      	     
      	     /**
@@ -315,26 +318,38 @@ function init(){
 	startRequest();
 }
 
-function startRequest(){
+
+function updateBadgeText() {
 	var key = getCurrentDateAsKey();
 	var a = STORAGE.getTickleTabs(key);
-	console.log(a);
 	var badgelength = 0;
-	var badgetext = "";
-	//var delay = 1800000; // half hour
-	var delay = 1000; // one second (for testing)
-
-	if (a != null && a.length > 0) {
+	if (a != null ) {
 		for(var i = 0, l = a.length; i < l; i++ ) {
-			badgelength = badgelength + a[i].value.length;
+			badgelength += a[i].value.length;
 		}
 	}
-	if (badgelength != 0){
-		badgetext = String(badgelength)}
-	chrome.browserAction.setBadgeText({
-			text: badgetext});
-	window.setTimeout(startRequest, delay);
-}
+	if (badgelength > 0){
+		chrome.browserAction.setBadgeText({text: String(badgelength)});
+	} else {
+		chrome.browserAction.setBadgeText({
+		text: ''});
+	}
+};
+
+function startRequest(){
+	//var delay = 1800000; // half hour
+	updateBadgeText();
+	
+	var dt = new Date()
+	var ms = dt.getTime();
+	var tz = dt.getTimezoneOffset() * 60000;
+	var dayinms = (ms - tz) %  86400000;
+	var untilMidnight = 86400000 - dayinms;
+	
+	// console.log("until midnight = " + untilMidnight);
+	// var delay = 1000; // one second (for testing)
+	window.setTimeout(startRequest, untilMidnight);
+};
 
 function getCurrentDateAsKey() {
 	var d = new Date();
