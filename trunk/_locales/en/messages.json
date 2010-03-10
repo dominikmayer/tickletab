@@ -1,12 +1,12 @@
 {
 	"locale": {
 		"message": "en"
- 	}, 
+ 	},
 	"Name": {
 		"message": "TickleTab"
  	},
  	"Description": {
- 		"message": "TickleTab implements GTD-like Ticklers for Chrome tabs."
+ 		"message": "TickleTab implements GTD-like Ticklers for tabs."
  	},
 	"ActiveTabs": {
 		"message": "Tabs for today"

@@ -45,9 +45,12 @@ input.hasDatepicker:hover{
 <script type="text/javascript" src="lib/jquery.min.js"></script>
 <script type="text/javascript" src="lib/jquery-ui.min.js"></script>
 <script type="text/javascript" src="lib/jquery.ui.datepicker-de.js"></script>
+<script type="text/javascript" charset="utf-8" src="lib/jquery.ui.datepicker-zh-CN.js"></script>
 
 <script>
 	$(function() {
+		var locale = chrome.i18n.getMessage("locale");
+		console.log(locale);
 		//var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
 		//var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
 		//if (a != null && a.length > 0) {} else {
@@ -55,13 +58,13 @@ input.hasDatepicker:hover{
 		//}
 		//$.datepicker.setDefaults($.datepicker.regional['']);
 		$.datepicker.setDefaults({
-			firstDay: 1, 
-			changeFirstDay: false,
+			//firstDay: 1, 
+			//changeFirstDay: false,
 			showOtherMonths: true,
 			selectOtherMonths: true,
 			minDate: 0,
 		});
-		$("#datepicker").datepicker($.datepicker.regional[chrome.i18n.getMessage('locale')]);
+		$("#datepicker").datepicker($.datepicker.regional[locale]);
 		$("#datepicker").datepicker('option', {
 				dateFormat: "yymmdd",
 				onSelect : function (dateText) {
