@@ -1,14 +1,15 @@
 {
-	"name": "TickleTab",
+	"name": "__MSG_Name__",
 	"version": "0.2",
 
-	"description": "A Google Chrome Extension that implements GTD-like Ticklers for tabs.",
+	"default_locale": "en",
+	"description": "__MSG_Description__",
 	"icons": { "48": "images/tickletab-48.png",
         	  "128": "images/tickletab-128.png" },
 
 	"browser_action": {
     		"default_icon": "images/icon.png",
-    		"default_title": "TickleTab",
+    		"default_title": "__MSG_Name__",
     		"popup": "popup.html"
 	},
     
