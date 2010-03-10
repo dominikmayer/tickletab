@@ -1,0 +1,23 @@
+{
+	"Name": {
+		"message": "TickleTab"
+ 	},
+ 	"Description": {
+ 		"message": "A Google Chrome Extension that implements GTD-like Ticklers for tabs."
+ 	},
+	"ActiveTabs": {
+		"message": "Active tabs today"
+ 	}, 	
+	"closeTabUntil": {
+		"message": "Close tab until"
+ 	}, 	
+	"defineLabel": {
+		"message": "Define label (optional)"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "Tickler Dashboard"
+ 	}, 	 	
+	"openAll": {
+		"message": "Open All"
+ 	} 	
+}
