@@ -7,24 +7,28 @@
 // \u00DC Ue
 
 {
+	"locale": {
+		"message": "de"
+ 	} 
 	"Name": {
 		"message": "TickleTab"
  	},
  	"Description": {
- 		"message": "Eine Google Chrome Erweiterung, die Ticklers entsprechend dem GTD-Konzept f\u00FCr Chrome-Fenster implementiert."
+ 		"message": "TickleTab erweitert Chrome um eine Wiedervorlage für Tabs."
  	},
 	"ActiveTabs": {
-		"message": "Aktive Fenster f\u00FCr heute"
+		"message": "Tabs für heute"
  	}, 	
 	"closeTabUntil": {
-		"message": "Fenster wiedervorlegen am"
+		"message": "Aktuellen Tab vorlegen am"
  	}, 	
 	"defineLabel": {
-		"message": "(Optionales) Label"
+		"message": "Label setzen (optional)"
  	}, 	
 	"TicklerDashboard": {
-		"message": "Tickler \u00DCbersicht"
+		"message": "\u00DCbersicht"
  	}, 	 	
 	"openAll": {
 		"message": "Alle \u00F6ffnen"
- 	} 	}
+ 	} 
+}

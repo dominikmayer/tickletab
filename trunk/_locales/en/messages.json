@@ -1,15 +1,18 @@
 {
+	"locale": {
+		"message": "en"
+ 	} 
 	"Name": {
 		"message": "TickleTab"
  	},
  	"Description": {
- 		"message": "A Google Chrome Extension that implements GTD-like Ticklers for tabs."
+ 		"message": "TickleTab implements GTD-like Ticklers for Chrome tabs."
  	},
 	"ActiveTabs": {
-		"message": "Active tabs today"
+		"message": "Tabs for today"
  	}, 	
 	"closeTabUntil": {
-		"message": "Close tab until"
+		"message": "Close current tab until"
  	}, 	
 	"defineLabel": {
 		"message": "Define label (optional)"
@@ -18,6 +21,6 @@
 		"message": "Tickler Dashboard"
  	}, 	 	
 	"openAll": {
-		"message": "Open All"
+		"message": "Open all"
  	} 	
 }
