@@ -1,0 +1,26 @@
+{
+	"locale": {
+		"message": "zh"
+ 	},
+	"Name": {
+		"message": "TickleTab (备忘便签)"
+ 	},
+ 	"Description": {
+ 		"message": "TickleTab 帮助 GTD 爱好者们通过便签实现时间管理"
+ 	},
+	"ActiveTabs": {
+		"message": "今日便签提醒"
+ 	}, 	
+	"closeTabUntil": {
+		"message": "在这一天提醒我"
+ 	}, 	
+	"defineLabel": {
+		"message": "添加标签（可选）"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "备忘便签"
+ 	}, 	 	
+	"openAll": {
+		"message": "打开所有便签"
+ 	} 	
+}
