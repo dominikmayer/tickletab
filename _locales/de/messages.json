@@ -22,5 +22,8 @@
  	}, 	 	
 	"openAll": {
 		"message": "Alle öffnen"
- 	} 
+ 	},
+	"deleteTooltip": {
+		"message": "Löschen"
+	}
 }
