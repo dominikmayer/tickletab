@@ -358,7 +358,9 @@ input.hasDatepicker:hover{
 						var del_icon = document.createElement('img');
 						del_icon.setAttribute("src", 'images/delete.png');
 						del_icon.setAttribute("alt", '(x)');
-						del_icon.setAttribute("title", 'Click to delete');
+						//del_icon.setAttribute("title", 'Click to delete');
+						var tooltip_del = chrome.i18n.getMessage("deleteTooltip");
+						del_icon.setAttribute("title", tooltip_del);
 						del_icon.setAttribute("width", '10px');
 						del_icon.setAttribute("height", '10px');
 						a2.appendChild(del_icon);
