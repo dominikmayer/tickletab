@@ -24,6 +24,9 @@
 		"message": "Alle öffnen"
  	},
 	"deleteTooltip": {
-		"message": "Löschen"
+		"message": "Tab löschen"
+	},
+	"changeDateTooltip": {
+		"message": "Datum ändern"
 	}
 }
