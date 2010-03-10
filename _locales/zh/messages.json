@@ -22,5 +22,11 @@
  	}, 	 	
 	"openAll": {
 		"message": "打开所有便签"
- 	} 	
+ 	},
+	"deleteTooltip": {
+		"message": "删除"
+	},
+	"changeDateTooltip": {
+		"message": "改变日期"
+	}
 }
