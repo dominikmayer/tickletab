@@ -203,14 +203,14 @@ input.hasDatepicker:hover{
 						input.setAttribute('value', ai.key.substr(0,4)+'-'
 							+ai.key.substr(4,2) + '-' + ai.key.substr(6,2));
 						input.setAttribute("readonly", 'true');
-						input.setAttribute("title", 'Click to change');
+						input.setAttribute("title", chrome.i18n.getMessage("changeDateTooltip"));
 						tdi.appendChild(input);
 						achr.href = 'javascript:void(0)';
 						achr.onclick = bindRemoveTickleTab(kb, y.url);
 						var del_icon = document.createElement('img');
 						del_icon.setAttribute("src", 'images/delete.png');
 						del_icon.setAttribute("alt", '(x)');
-						del_icon.setAttribute("title", 'Click to delete');
+						del_icon.setAttribute("title", chrome.i18n.getMessage("deleteTooltip"));
 						del_icon.setAttribute("width", '10px');
 						del_icon.setAttribute("height", '10px');
 						achr.appendChild(del_icon);
@@ -350,7 +350,7 @@ input.hasDatepicker:hover{
 						input.setAttribute("id", 'dpl-' + i + '-' + ii);
 						input.setAttribute('value', datestr);
 						input.setAttribute("readonly", 'true');
-						input.setAttribute("title", 'Click to change');
+						input.setAttribute("title", chrome.i18n.getMessage("changeDateTooltip"));
 						tdi.appendChild(input);
 
 						var a2 = document.createElement('a');
@@ -358,9 +358,7 @@ input.hasDatepicker:hover{
 						var del_icon = document.createElement('img');
 						del_icon.setAttribute("src", 'images/delete.png');
 						del_icon.setAttribute("alt", '(x)');
-						//del_icon.setAttribute("title", 'Click to delete');
-						var tooltip_del = chrome.i18n.getMessage("deleteTooltip");
-						del_icon.setAttribute("title", tooltip_del);
+						del_icon.setAttribute("title", chrome.i18n.getMessage("deleteTooltip"));
 						del_icon.setAttribute("width", '10px');
 						del_icon.setAttribute("height", '10px');
 						a2.appendChild(del_icon);

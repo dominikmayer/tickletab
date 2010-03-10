@@ -22,5 +22,11 @@
  	}, 	 	
 	"openAll": {
 		"message": "Open all"
- 	} 	
+ 	},
+	"deleteTooltip": {
+		"message": "delete tab"
+	},
+	"changeDateTooltip": {
+		"message": "change date"
+	}
 }
