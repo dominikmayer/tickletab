@@ -1,11 +1,3 @@
-// \u00E4 ae
-// \u00F6 oe
-// \u00FC ue
-// \u00DF ss
-// \u00C4 Ae
-// \u00D6 Oe
-// \u00DC Ue
-
 {
 	"locale": {
 		"message": "de"
@@ -26,9 +18,9 @@
 		"message": "Label setzen (optional)"
  	}, 	
 	"TicklerDashboard": {
-		"message": "\u00DCbersicht"
+		"message": "Übersicht"
  	}, 	 	
 	"openAll": {
-		"message": "Alle \u00F6ffnen"
+		"message": "Alle öffnen"
  	} 
 }
