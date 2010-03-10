@@ -44,21 +44,31 @@ input.hasDatepicker:hover{
 
 <script type="text/javascript" src="lib/jquery.min.js"></script>
 <script type="text/javascript" src="lib/jquery-ui.min.js"></script>
+<script type="text/javascript" src="lib/jquery.ui.datepicker-de.js"></script>
 
 <script>
 	$(function() {
-			$("#datepicker").datepicker({
-					dateFormat: "yymmdd",
-					firstDay: 1, 
-					changeFirstDay: false,
-					showOtherMonths: true,
-					selectOtherMonths: true,
-					minDate: 0,
-					onSelect : function (dateText) {
-						addDateLabel(dateText);
-						addTickleTab(dateText);
-					}					
-			});
+		//var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
+		//var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
+		//if (a != null && a.length > 0) {} else {
+		//	$("#tl").hide().next().hide()
+		//}
+		//$.datepicker.setDefaults($.datepicker.regional['']);
+		$.datepicker.setDefaults({
+			firstDay: 1, 
+			changeFirstDay: false,
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			minDate: 0,
+		});
+		$("#datepicker").datepicker($.datepicker.regional[chrome.i18n.getMessage('locale')]);
+		$("#datepicker").datepicker('option', {
+				dateFormat: "yymmdd",
+				onSelect : function (dateText) {
+					addDateLabel(dateText);
+					addTickleTab(dateText);
+				}
+		});
 		$("#accordion").accordion({
 			autoHeight: false,
 			fillSpace: true,
@@ -218,9 +228,6 @@ input.hasDatepicker:hover{
 							//buttonText: "Change",
 							//buttonImage: 'images/cal.png',
 							//buttonImageOnly: true,
-							showOtherMonths: true,
-							selectOtherMonths: true,
-							minDate: 0,
 							onSelect : function(dateText){changeDate(dateText, kb, y.url, y.title)}
 						});
 						//$('.ui-datepicker-trigger').addClass('ui-icon ui-icon-calendar');
@@ -270,7 +277,9 @@ input.hasDatepicker:hover{
 	function bindRemoveTickleTab(key, url) {
 		return function() {
 			removeTickleTab(key, url);
-			$(this).parent().parent().hide();
+			//$(this).parent().parent().hide();
+			updateDashboard();
+			updateTodayList();
 		};
 	}
 	
