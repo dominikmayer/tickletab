@@ -1,0 +1,30 @@
+// \u00E4 ae
+// \u00F6 oe
+// \u00FC ue
+// \u00DF ss
+// \u00C4 Ae
+// \u00D6 Oe
+// \u00DC Ue
+
+{
+	"Name": {
+		"message": "TickleTab"
+ 	},
+ 	"Description": {
+ 		"message": "Eine Google Chrome Erweiterung, die Ticklers entsprechend dem GTD-Konzept f\u00FCr Chrome-Fenster implementiert."
+ 	},
+	"ActiveTabs": {
+		"message": "Aktive Fenster f\u00FCr heute"
+ 	}, 	
+	"closeTabUntil": {
+		"message": "Fenster wiedervorlegen am"
+ 	}, 	
+	"defineLabel": {
+		"message": "(Optionales) Label"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "Tickler \u00DCbersicht"
+ 	}, 	 	
+	"openAll": {
+		"message": "Alle \u00F6ffnen"
+ 	} 	}
