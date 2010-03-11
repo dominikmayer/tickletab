@@ -15,11 +15,14 @@
 		"message": "Отложить текущую закладку до..."
  	}, 	
 	"defineLabel": {
-		"message": "Запомнить как (опцонально)"
+		"message": "Запомнить как (опционально)"
  	}, 	
 	"openAll": {
 		"message": "Открыть Все"
  	},
+	"TicklerDashboard": {
+		"message": "Все закладки"
+ 	}, 	 	
 	"deleteTooltip": {
 		"message": "Удалить"
 	},
