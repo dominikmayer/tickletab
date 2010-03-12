@@ -17,6 +17,9 @@
 	"closeMultipleTabsUntil": {
 		"message": "Alle Tabs schließen und vorlegen am"
  	}, 	
+	"allTabs": {
+		"message": "Alle Tabs"
+ 	}, 	
 	"defineLabel": {
 		"message": "Datum speichern als (optional)"
  	}, 	
