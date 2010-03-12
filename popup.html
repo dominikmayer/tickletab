@@ -207,7 +207,7 @@ input.hasDatepicker:hover{
 						input.setAttribute("title", chrome.i18n.getMessage("changeDateTooltip"));
 						tdi.appendChild(input);
 						achr.href = 'javascript:void(0)';
-						achr.onclick = bindRemoveTickleTab(kb, y.url);
+						achr.onclick = bindRemoveTickleTab(kb, y.url, y.title);
 						var del_icon = document.createElement('img');
 						del_icon.setAttribute("src", 'images/delete.png');
 						del_icon.setAttribute("alt", '(x)');
@@ -270,9 +270,19 @@ input.hasDatepicker:hover{
 		};
 	}
 
-	function bindRemoveTickleTab(key, url) {
+	function bindRemoveTickleTab(key, url, title) {
 		return function() {
 			removeTickleTab(key, url);
+			var a = document.createElement('a');
+			a.appendChild(document.createTextNode('Undo'));
+			a.href = 'javascript:void(0)';
+			a.onclick = function(){
+				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, url, title)
+				updateDashboard();
+				updateTodayList();
+				$(this).parent().html('');
+			};
+			$('#undo').html('').append(a);
 			//$(this).parent().parent().hide();
 			updateDashboard();
 			updateTodayList();
@@ -317,6 +327,15 @@ input.hasDatepicker:hover{
 	function bindRemoveDateLabel(key, title) {
 		return function() {
 			chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(key, title);
+			var a = document.createElement('a');
+			a.appendChild(document.createTextNode('Undo'));
+			a.href = 'javascript:void(0)';
+			a.onclick = function(){
+				chrome.extension.getBackgroundPage().STORAGE.addDateLabel(key, title)
+				updateDateLabelsList();
+				$(this).parent().html('');
+			};
+			$('#undo').html('').append(a);
 			updateDateLabelsList();
 		};
 	}
@@ -390,9 +409,11 @@ input.hasDatepicker:hover{
 </script>
 
 <body onload="onLoad()">
+	<div id = "undo" align="right"></div>
 	<div id='accordion' style='height:400px'>
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("ActiveTabs"));</script></a></h3>
 		<div id='today-list'>
+			<div class='tickler-undo' id='today-list-undo' align='center'></div>
 			<table id='today-list-content'>
 			</table>
 			<div align="right" id='today-list-actions'>
@@ -401,14 +422,15 @@ input.hasDatepicker:hover{
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("closeTabUntil"));</script></a></h3>		
 		<div id='close'>
 			<div>
-			<table id='date-labels'>
-			</table>
-			<div><script type="text/javascript">document.write(chrome.i18n.getMessage("defineLabel"));</script>: <input id="new-date-label" value=''></div>
+				<div class='undo' id='label-undo' align="center"></div>
+				<table id='date-labels'></table>
+				<div><script type="text/javascript">document.write(chrome.i18n.getMessage("defineLabel"));</script>: <input id="new-date-label" value=''></div>
 			</div>
 			<div id='datepicker'></div>
 		</div>
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("TicklerDashboard"));</script></a></h3>
 		<div id='dashboard'>
+			<div class='tickler-undo' id='dashboard-undo' align="center"></div>
 			<table id='dashboard-content'>
 			</table>
 		</div>
