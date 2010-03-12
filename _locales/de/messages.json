@@ -11,11 +11,14 @@
 	"ActiveTabs": {
 		"message": "Tabs für heute"
  	}, 	
-	"closeTabUntil": {
-		"message": "Aktuellen Tab vorlegen am"
+	"closeSingleTabUntil": {
+		"message": "Tab schließen und vorlegen am"
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Alle Tabs schließen und vorlegen am"
  	}, 	
 	"defineLabel": {
-		"message": "Tag speichern als (optional)"
+		"message": "Datum speichern als (optional)"
  	}, 	
 	"TicklerDashboard": {
 		"message": "Übersicht"

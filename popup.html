@@ -56,6 +56,9 @@ input.hasDatepicker:hover{
 <script type="text/javascript" charset="utf-8" src="lib/jquery.ui.datepicker-ru.js"></script>
 
 <script>
+	//var addFunction = function(key) {addSingleTab(key)};
+	//var addFunction = function(key) {addMultipleTabs(key)};
+	var multiple_tabs = false;
 	$(function() {
 		//var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
 		//var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
@@ -72,7 +75,8 @@ input.hasDatepicker:hover{
 				dateFormat: "yymmdd",
 				onSelect : function (dateText) {
 					addDateLabel(dateText);
-					addTickleTab(dateText);
+					//addSingleTab(dateText);
+					addFunction(dateText);
 				}
 		});
 		$("#accordion").accordion({
@@ -84,8 +88,24 @@ input.hasDatepicker:hover{
 				.text(chrome.i18n.getMessage("openAll"))
 				.click(openAllTickleTabs)
 			);
+		$('#sm-switcher').click(function(){
+			multiple_tabs = !multiple_tabs;
+			if (multiple_tabs == true){
+				$('#close-heading').text(chrome.i18n.getMessage("closeMultipleTabsUntil"));
+			} else {
+				$('#close-heading').text(chrome.i18n.getMessage("closeSingleTabUntil"));
+			}
+		});
 	});
-	
+
+	function addFunction(key){
+		if (multiple_tabs == true) {
+			addMultipleTabs(key)
+		} else {
+			addSingleTab(key)
+		}
+	}
+
 	function addDateLabel(key) {
 		var t = document.getElementById("new-date-label");
 		
@@ -95,32 +115,47 @@ input.hasDatepicker:hover{
 		}
 	};
 	
-	function addTickleTab(key) {		
-		chrome.tabs.getSelected(focusedWindowId, 
-			function ( tab ) {
-				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title);
-
-				chrome.tabs.getAllInWindow(focusedWindowId,function(tabs){
-						if (tabs.length == 1) {
-							// open chrome://newtab to prevent chrome from closing 
-							chrome.tabs.create({
-									'windowId' : focusedWindowId,
-									'url' : 'chrome://newtab',
-									'selected' : true
-							});
-						}
-						// close tab
-						try {
-							chrome.tabs.remove(tab.id);
-						} catch (e) {
-							alert(e);
-						}
-						// close self
-						window.close();
-				});				
-				
-			});
+	function addTickleTab(tab, key) {		
+		chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title);
+		try {
+			chrome.tabs.remove(tab.id);
+		} catch (e) {
+			alert(e);
+		}
 	};
+
+	function addSingleTab(key) {
+		chrome.tabs.getAllInWindow(focusedWindowId,function(tabs){
+			if (tabs.length == 1) {
+				// open chrome://newtab to prevent chrome from closing 
+				createEmptyTab();
+			}
+			chrome.tabs.getSelected(focusedWindowId, 
+				function ( tab ) {
+					addTickleTab(tab, key);
+				});
+		});
+	}
+
+	function addMultipleTabs(key) {
+		chrome.tabs.getAllInWindow(focusedWindowId,
+			function(tabs){
+				for(var i = 0, l = tabs.length; i < l; i++ ) {
+					if (i == tabs.length-1) {
+						createEmptyTab();
+					}
+					addTickleTab(tabs[i], key);
+				}
+			});
+	}
+
+	function createEmptyTab(){
+		chrome.tabs.create({
+				'windowId' : focusedWindowId,
+				'url' : 'chrome://newtab',
+				'selected' : false
+		});
+	}
 	
 	function shortenTabTitle(title) {
 		if (title.length > 35) {
@@ -234,7 +269,8 @@ input.hasDatepicker:hover{
 
 	function bindAddTickleTab(key) {
 		return function() {
-			addTickleTab(key);
+			//addSingleTab(key);
+			addFunction(key);
 		};
 	}
 
@@ -380,22 +416,18 @@ input.hasDatepicker:hover{
 	<div id='accordion' style='height:400px'>
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("ActiveTabs"));</script></a></h3>
 		<div id='today-list'>
-			<div class='tickler-undo' id='today-list-undo' align='center'></div>
 			<table id='today-list-content'></table>
 			<div align="right" id='today-list-actions'></div>
 		</div>
-		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("closeTabUntil"));</script></a></h3>		
+		<h3><a href='#' id='close-heading'><script type="text/javascript">document.write(chrome.i18n.getMessage("closeSingleTabUntil"));</script></a></h3>		
 		<div id='close'>
-			<div>
-				<div class='undo' id='label-undo' align="center"></div>
-				<table id='date-labels'></table>
-				<div><script type="text/javascript">document.write(chrome.i18n.getMessage("defineLabel"));</script>: <input id="new-date-label" value=''></div>
-			</div>
+			<table id='date-labels'></table>
+			<div><script type="text/javascript">document.write(chrome.i18n.getMessage("defineLabel"));</script>: <input id="new-date-label" value=''></div>
 			<div id='datepicker'></div>
+			<div align="right"><a href="javascript:void(0)" id="sm-switcher">All tabs</a></div>
 		</div>
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("TicklerDashboard"));</script></a></h3>
 		<div id='dashboard'>
-			<div class='tickler-undo' id='dashboard-undo' align="center"></div>
 			<table id='dashboard-content'></table>
 		</div>
 	</div>
