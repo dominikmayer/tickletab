@@ -17,6 +17,9 @@
 	"closeMultipleTabsUntil": {
 		"message": "Close all open tabs until"
  	}, 	
+	"allTabs": {
+		"message": "All tabs"
+ 	}, 	
 	"defineLabel": {
 		"message": "Save date as (optional)"
  	}, 	
