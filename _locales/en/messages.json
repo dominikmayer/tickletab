@@ -20,6 +20,9 @@
 	"allTabs": {
 		"message": "All tabs"
  	}, 	
+	"singleTab": {
+		"message": "Single tab"
+ 	}, 	
 	"defineLabel": {
 		"message": "Save date as (optional)"
  	}, 	

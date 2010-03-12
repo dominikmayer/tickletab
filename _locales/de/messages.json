@@ -20,6 +20,9 @@
 	"allTabs": {
 		"message": "Alle Tabs"
  	}, 	
+	"singleTab": {
+		"message": "Einzelner Tab"
+ 	}, 	
 	"defineLabel": {
 		"message": "Datum speichern als (optional)"
  	}, 	

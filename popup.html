@@ -92,8 +92,10 @@ input.hasDatepicker:hover{
 			multiple_tabs = !multiple_tabs;
 			if (multiple_tabs == true){
 				$('#close-heading').text(chrome.i18n.getMessage("closeMultipleTabsUntil"));
+				$('#sm-switcher').text(chrome.i18n.getMessage("singleTab"));
 			} else {
 				$('#close-heading').text(chrome.i18n.getMessage("closeSingleTabUntil"));
+				$('#sm-switcher').text(chrome.i18n.getMessage("allTabs"));
 			}
 		});
 	});
@@ -424,7 +426,9 @@ input.hasDatepicker:hover{
 			<table id='date-labels'></table>
 			<div><script type="text/javascript">document.write(chrome.i18n.getMessage("defineLabel"));</script>: <input id="new-date-label" value=''></div>
 			<div id='datepicker'></div>
-			<div align="right"><a href="javascript:void(0)" id="sm-switcher"><script type="text/javascript">document.write(chrome.i18n.getMessage("allTabs"));</script></a></div>
+			<div align="right"><a href="javascript:void(0)" id="sm-switcher">
+					<script type="text/javascript">document.write(chrome.i18n.getMessage("allTabs"));</script>
+			</a></div>
 		</div>
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("TicklerDashboard"));</script></a></h3>
 		<div id='dashboard'>
