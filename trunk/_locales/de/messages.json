@@ -28,5 +28,9 @@
 	},
 	"changeDateTooltip": {
 		"message": "Datum ändern"
+	},
+	"undo": {
+		"message": "Rückgängig"
 	}
+
 }

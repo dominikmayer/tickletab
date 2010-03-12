@@ -40,6 +40,7 @@ input.hasDatepicker:hover{
 	border:1px solid #000000;
 }
 </style>
+
 <link type="text/css" rel="stylesheet" href="ui-lightness/jquery-ui-1.7.2.custom.css">
 
 <script type="text/javascript" src="lib/jquery.min.js"></script>
@@ -57,8 +58,6 @@ input.hasDatepicker:hover{
 		//}
 		$.datepicker.setDefaults($.datepicker.regional[chrome.i18n.getMessage("locale")]);
 		$.datepicker.setDefaults({
-			//firstDay: 1, 
-			//changeFirstDay: false,
 			showOtherMonths: true,
 			selectOtherMonths: true,
 			minDate: 0,
@@ -75,6 +74,10 @@ input.hasDatepicker:hover{
 			fillSpace: true,
 			event: "mouseover"
 		});
+		$('#today-list-actions').append($('<a href="javascript:void(0)"></a>')
+				.text(chrome.i18n.getMessage("openAll"))
+				.click(openAllTickleTabs)
+			);
 	});
 	
 	function addDateLabel(key) {
@@ -107,7 +110,6 @@ input.hasDatepicker:hover{
 							alert(e);
 						}
 						// close self
-						
 						window.close();
 				});				
 				
@@ -118,7 +120,6 @@ input.hasDatepicker:hover{
 		if (title.length > 35) {
 			title = title.substring(0,32) + '...';
 		}
-		
 		return title;
 	}
 	
@@ -154,87 +155,48 @@ input.hasDatepicker:hover{
 	function updateTodayList() {
 		var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
 		var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
-		
-		var t = document.getElementById("today-list-content");
-		var tt = document.getElementById("today-list-actions");
-		console.log(a);
-		updateList(a, t, tt, 0);
-
-	
+		updateList(a, $('#today-list-content'), 0);
 	};
 
 	function updateDashboard(){
 		var a = chrome.extension.getBackgroundPage().STORAGE.getAllTickleTabs();
-
-		var t = document.getElementById("dashboard-content");
-		var tt = document.getElementById("dashboard-actions");
-
-		updateList(a, t, tt, 2);
+		var t = $('#dashboard-content');
+		updateList(a, t, 2);
 	}
 
-	function updateList(data, content, actions, folder){
+	function getDateFromKey(key){
+		return key.substr(0,4) + '-' + key.substr(4,2) + '-' + key.substr(6,2)
+	}
+
+	function getKeyFromDate(datestr){
+		return datestr.substr(0,4) + datestr.substr(5,2) + datestr.substr(8,2);
+	}
+
+	function updateList(data, content, folder){
 		if (data != null && data.length > 0) {		
 			$(".ui-accordion-header").eq(folder).show();
 			// remove all child nodes 
-			content.innerHTML = "";
-			
+			content.html('');
 			for(var i = 0, l = data.length; i < l; i++ ) {
 				// key -> value :[{url, title}]
 				var ai = data[i];
-
 				var b = ai.value;
 				if (b != null) {
 					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
 						//{url, title}
 						var y = b[ii];
 						var kb = ai.key;
-						var tr = document.createElement('tr');
-						var tdt = document.createElement('td');
-						var tdi = document.createElement('td');
-						var tdr = document.createElement('td');
-						var ach = document.createElement('a');
-						var achr = document.createElement('a');
-						ach.href = 'javascript:void(0)';
-						ach.onclick = bindOpenTickleTab(kb, y.url);
-						var short_title = document.createTextNode(shortenTabTitle(y.title));
-						ach.appendChild(short_title);
-						ach.setAttribute("title", y.title);
-						tdt.appendChild(ach);
-						var input = document.createElement('input');
-						input.setAttribute("id", 'dpt-' + String(folder) + '-' + i + '-' + ii);
-						input.setAttribute('value', ai.key.substr(0,4)+'-'
-							+ai.key.substr(4,2) + '-' + ai.key.substr(6,2));
-						input.setAttribute("readonly", 'true');
-						input.setAttribute("title", chrome.i18n.getMessage("changeDateTooltip"));
-						tdi.appendChild(input);
-						achr.href = 'javascript:void(0)';
-						achr.onclick = bindRemoveTickleTab(kb, y.url, y.title);
-						var del_icon = document.createElement('img');
-						del_icon.setAttribute("src", 'images/delete.png');
-						del_icon.setAttribute("alt", '(x)');
-						del_icon.setAttribute("title", chrome.i18n.getMessage("deleteTooltip"));
-						del_icon.setAttribute("width", '10px');
-						del_icon.setAttribute("height", '10px');
-						achr.appendChild(del_icon);
-						tdr.appendChild(achr);
-						tr.appendChild(tdi);
-						tr.appendChild(tdt);
-						tr.appendChild(tdr);
-						content.appendChild(tr);
-						$('#dpt-' + String(folder) + '-' + i + '-' + ii).datepicker({
-							dateFormat: 'yy-mm-dd',
-							//showOn: 'both',
-							//buttonText: "Change",
-							//buttonImage: 'images/cal.png',
-							//buttonImageOnly: true,
-							onSelect : function(dateText){changeDate(dateText, kb, y.url, y.title)}
-						});
-						//$('.ui-datepicker-trigger').addClass('ui-icon ui-icon-calendar');
+						var datestr = getDateFromKey(kb);
+						printList(content,
+							datestr,
+							shortenTabTitle(y.title),
+							y.title,
+							function(dateText){changeDate(dateText, kb, y.url, y.title)},
+							bindOpenTickleTab(kb, y.url),
+							bindRemoveTickleTab(kb, y.url, y.title)
+						);
 					}
 				}
-			}
-			if (folder == 0){
-				actions.innerHTML = "<a href='javascript:openAllTickleTabs();' >" + chrome.i18n.getMessage("openAll") + "</a>";
 			}
 		} else {
 			// hide first accordion if there are no tabs
@@ -244,19 +206,18 @@ input.hasDatepicker:hover{
 	}
 
 	function changeDate(dateText, key, url, title){
-			var storeDate = dateText.substr(0,4)+dateText.substr(5,2)+dateText.substr(8,2);
-			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
-			chrome.extension.getBackgroundPage().STORAGE.addTickleTab(
-				storeDate, url, title);
-			window.close();
+		var storeDate = getKeyFromDate(dateText);
+		chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
+		chrome.extension.getBackgroundPage().STORAGE.addTickleTab(storeDate, url, title);
+		window.close();
 	}
 
 	function changeLabel(oldDate, newDate, title){
-			var oldKey = oldDate.substr(0,4)+oldDate.substr(5,2)+oldDate.substr(8,2);
-			var newKey = newDate.substr(0,4)+newDate.substr(5,2)+newDate.substr(8,2);
-			chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(oldKey, title);
-			chrome.extension.getBackgroundPage().STORAGE.addDateLabel(newKey, title);
-			updateDateLabelsList();
+		var oldKey = getKeyFromDate(oldDate);
+		var newKey = getKeyFromDate(newDate);
+		chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(oldKey, title);
+		chrome.extension.getBackgroundPage().STORAGE.addDateLabel(newKey, title);
+		updateDateLabelsList();
 	}
 	
 	function bindOpenTickleTab(key, url) {
@@ -274,17 +235,16 @@ input.hasDatepicker:hover{
 	function bindRemoveTickleTab(key, url, title) {
 		return function() {
 			removeTickleTab(key, url);
-			var a = document.createElement('a');
-			a.appendChild(document.createTextNode('Undo'));
-			a.href = 'javascript:void(0)';
-			a.onclick = function(){
-				chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, url, title)
-				updateDashboard();
-				updateTodayList();
-				$(this).parent().html('');
-			};
-			$('#undo').html('').append(a);
-			//$(this).parent().parent().hide();
+			$('#undo').html('')
+				.append($('<a href="javascript:void(0)"></a>')
+					.text(chrome.i18n.getMessage("undo"))
+					.click(function(){
+						chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, url, title)
+						updateDashboard();
+						updateTodayList();
+						$(this).parent().html('');
+					})
+				);
 			updateDashboard();
 			updateTodayList();
 		};
@@ -292,11 +252,7 @@ input.hasDatepicker:hover{
 	
 	function openAllTickleTabs() {
 		// call on click for each node
-		var t = document.getElementById("today-list-content");
-		var a = t.childNodes;
-		for(var i = 0, l = a.length; i < l; i++ ) {
-			a[i].childNodes[1].childNodes[0].onclick();
-		}
+		$("#today-list-content a").click();
 	}
 	
 	function openTickleTab(key, url) {
@@ -306,7 +262,6 @@ input.hasDatepicker:hover{
 					'url' : url,
 					'selected' : true
 			});
-			
 			// remove tickle tab from storage
 			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
 		} catch (e) {
@@ -328,15 +283,15 @@ input.hasDatepicker:hover{
 	function bindRemoveDateLabel(key, title) {
 		return function() {
 			chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(key, title);
-			var a = document.createElement('a');
-			a.appendChild(document.createTextNode('Undo'));
-			a.href = 'javascript:void(0)';
-			a.onclick = function(){
-				chrome.extension.getBackgroundPage().STORAGE.addDateLabel(key, title)
-				updateDateLabelsList();
-				$(this).parent().html('');
-			};
-			$('#undo').html('').append(a);
+			$('#undo').html('')
+				.append($('<a href="javascript:void(0)"></a>')
+					.text(chrome.i18n.getMessage("undo"))
+					.click(function(){
+						chrome.extension.getBackgroundPage().STORAGE.addDateLabel(key, title)
+						updateDateLabelsList();
+						$(this).parent().html('');
+					})
+				);
 			updateDateLabelsList();
 		};
 	}
@@ -344,69 +299,74 @@ input.hasDatepicker:hover{
 	// render date-labels component list
 	function updateDateLabelsList() {
 		var data = chrome.extension.getBackgroundPage().STORAGE.getDataLabels();
-		var t = document.getElementById("date-labels");
-		t.innerHTML = "";
+		var table = $('#date-labels');
+		table.html('');
 		if (data != null && data.length > 0 ) {
-
 			for(var i = 0, l = data.length; i < l; i++ ) {
 				// key -> value: [label1, label 2]
 				var a = data[i];
 				var b = a.value;
-				var datestr = a.key.substr(0,4) + '-' + a.key.substr(4,2) + '-' + a.key.substr(6,2);
+				var datestr = getDateFromKey(a.key);
 				if (b != null) {
 					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
-						var label = b[ii]; 
-						var tr = document.createElement('tr');
-						var tdi = document.createElement('td');
-						var tdt = document.createElement('td');
-						var tdr = document.createElement('td');
-
-						var a1 = document.createElement('a');
-						a1.href = 'javascript:void(0)';
-						a1.appendChild(document.createTextNode(label));
-						// action binding
-						a1.onclick = bindAddTickleTab(a.key);
-
-						var input = document.createElement('input');
-						input.setAttribute("id", 'dpl-' + i + '-' + ii);
-						input.setAttribute('value', datestr);
-						input.setAttribute("readonly", 'true');
-						input.setAttribute("title", chrome.i18n.getMessage("changeDateTooltip"));
-						tdi.appendChild(input);
-
-						var a2 = document.createElement('a');
-						a2.href = 'javascript:void(0)';
-						var del_icon = document.createElement('img');
-						del_icon.setAttribute("src", 'images/delete.png');
-						del_icon.setAttribute("alt", '(x)');
-						del_icon.setAttribute("title", chrome.i18n.getMessage("deleteTooltip"));
-						del_icon.setAttribute("width", '10px');
-						del_icon.setAttribute("height", '10px');
-						a2.appendChild(del_icon);
-						// action binding
-						a2.onclick = bindRemoveDateLabel(a.key, label); 
-						tdt.appendChild(a1);
-						tdr.appendChild(a2);
-						tr.appendChild(tdi);
-						tr.appendChild(tdt);
-						tr.appendChild(tdr);
-						t.appendChild(tr);
-
-						$('#dpl-' + i + '-' + ii).datepicker({
-							dateFormat: 'yy-mm-dd',
-							showOtherMonths: true,
-							selectOtherMonths: true,
-							minDate: 0,
-							onSelect : function(dateText){changeLabel(datestr, dateText, label)}
-						});
+						var label = b[ii];
+						printList(table,
+							datestr,
+							label,
+							label,
+							function(dateText){changeLabel(datestr, dateText, label)},
+							bindAddTickleTab(a.key),
+							bindRemoveDateLabel(a.key, label)
+						);
 					}
 				}
 			}
-		} else {
-			// t.innerHTML = "";
 		}
 	}
-	
+
+	function printList(table, datestr, label, tooltip, bindDatepickerSelect, bindClick, bindDelete){
+		table.append($('<tr></tr>')
+			.append($('<td></td>')
+				.append($('<input>')
+					.attr({
+						value: datestr,
+						readonly: 'true',
+						title:  chrome.i18n.getMessage("changeDateTooltip")
+					})
+					.datepicker({
+						dateFormat: 'yy-mm-dd',
+						showOtherMonths: true,
+						selectOtherMonths: true,
+						minDate: 0,
+						onSelect : bindDatepickerSelect
+					})
+				)
+			)
+			.append($('<td></td>')
+				.append($('<a href="javascript:void(0)"></a>')
+					.text(label)
+					.attr({
+						title: tooltip
+					})
+					.click(bindClick)
+				)
+			)
+			.append($('<td></td>')
+				.append($('<a href="javascript:void(0)"></a>')
+					.append($('<img>')
+						.attr({
+							src: 'images/delete.png',
+							alt: '(x)',
+							title: chrome.i18n.getMessage("deleteTooltip"),
+							width: "10",
+							height: "10"
+						})
+						.click(bindDelete)
+					)
+				)
+			)
+		);
+	}
 </script>
 
 <body onload="onLoad()">
@@ -415,10 +375,8 @@ input.hasDatepicker:hover{
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("ActiveTabs"));</script></a></h3>
 		<div id='today-list'>
 			<div class='tickler-undo' id='today-list-undo' align='center'></div>
-			<table id='today-list-content'>
-			</table>
-			<div align="right" id='today-list-actions'>
-			</div>
+			<table id='today-list-content'></table>
+			<div align="right" id='today-list-actions'></div>
 		</div>
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("closeTabUntil"));</script></a></h3>		
 		<div id='close'>
@@ -432,8 +390,7 @@ input.hasDatepicker:hover{
 		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("TicklerDashboard"));</script></a></h3>
 		<div id='dashboard'>
 			<div class='tickler-undo' id='dashboard-undo' align="center"></div>
-			<table id='dashboard-content'>
-			</table>
+			<table id='dashboard-content'></table>
 		</div>
 	</div>
 </body>
