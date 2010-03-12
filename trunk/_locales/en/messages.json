@@ -11,8 +11,11 @@
 	"ActiveTabs": {
 		"message": "Tabs for today"
  	}, 	
-	"closeTabUntil": {
+	"closeSingleTabUntil": {
 		"message": "Close current tab until"
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Close all open tabs until"
  	}, 	
 	"defineLabel": {
 		"message": "Save date as (optional)"
