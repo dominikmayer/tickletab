@@ -28,5 +28,8 @@
 	},
 	"changeDateTooltip": {
 		"message": "改变日期"
+	},
+	"undo": {
+		"message": "撤销"
 	}
 }
