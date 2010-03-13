@@ -33,10 +33,10 @@
 		"message": "Open all"
  	},
 	"deleteTooltip": {
-		"message": "delete"
+		"message": "Delete"
 	},
 	"changeDateTooltip": {
-		"message": "change date"
+		"message": "Change date"
 	},
 	"undo": {
 		"message": "Undo"
