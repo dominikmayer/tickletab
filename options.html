@@ -1,6 +1,5 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 
@@ -10,25 +9,28 @@
 </head>
 
 <body>
-
+<div id="container">
 <h1>
-	<img src='images/tickletab-128.png' style="vertical-align: middle;margin: 1em" title="Tickle Tab" alt="Tickle Tab">Tickle Tab
+	<img src='images/tickletab-48.png' style="vertical-align: middle;margin: 1em" title="Tickle Tab" alt="Tickle Tab"/>Tickle Tab
 </h1>
+<section>
+<section-head>What is this about?</section-head>
 
-<h2>What is this about?</h2>
+<section-content>TickleTab implements the Tickler idea of David Allen's GTD. 
+It saves all the tabs you don't need right now and presents them again at the specified date.
+</section-content>
+</section>
+<section>
+<section-head>Options</section-head>
 
-<p>TickleTab implements the Tickler idea of David Allen's GTD. 
-It saves all the tabs you don't need right now and presents them again at the specified date.</p>
-
-<h2>Options</h2>
-
-<div class="options">
+<section-content>
 	A value for an ignored option: <input id="txtOption01" type="text" oninput="markDirty()">
-</div>
+</section-content>
+</section>
 
 <div>
-  <button id="btnSave" onclick="save()">Save</button>
-  <button id="btnCancel" onclick="init()">Cancel</button>
+  <input type="button" id="btnSave" onclick="save()" value="Save"/>
+</div>
 </div>
 
 <script>
