@@ -11,11 +11,20 @@
 	"ActiveTabs": {
 		"message": "今日便签提醒"
  	}, 	
-	"closeTabUntil": {
-		"message": "在这一天提醒我"
+	"closeSingleTabUntil": {
+		"message": "关闭当前标签至"
+ 	},
+	"closeMultipleTabsUntil": {
+		"message": "关闭所有开放标签至"
  	}, 	
+	"allTabs": {
+		"message": "应用至所有标签"
+ 	}, 	
+	"singleTab": {
+		"message": "应用至当前标签"
+ 	},
 	"defineLabel": {
-		"message": "添加标签（可选）"
+		"message": "保存日期为（可选）"
  	}, 	
 	"TicklerDashboard": {
 		"message": "备忘便签"
