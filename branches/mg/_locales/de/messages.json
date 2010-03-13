@@ -1,0 +1,45 @@
+{
+	"locale": {
+		"message": "de"
+ 	},
+	"Name": {
+		"message": "TickleTab"
+ 	},
+ 	"Description": {
+ 		"message": "TickleTab erweitert Chrome um eine Wiedervorlage für Tabs."
+ 	},
+	"ActiveTabs": {
+		"message": "Tabs für heute"
+ 	}, 	
+	"closeSingleTabUntil": {
+		"message": "Tab schließen und vorlegen am"
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Alle Tabs schließen und vorlegen am"
+ 	}, 	
+	"allTabs": {
+		"message": "Auf alle Tabs anwenden"
+ 	}, 	
+	"singleTab": {
+		"message": "Auf aktuellen Tab anwenden"
+ 	}, 	
+	"defineLabel": {
+		"message": "Datum speichern als (optional)"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "Übersicht"
+ 	}, 	 	
+	"openAll": {
+		"message": "Alle öffnen"
+ 	},
+	"deleteTooltip": {
+		"message": "Löschen"
+	},
+	"changeDateTooltip": {
+		"message": "Datum ändern"
+	},
+	"undo": {
+		"message": "Rückgängig"
+	}
+
+}

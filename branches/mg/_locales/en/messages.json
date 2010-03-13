@@ -1,0 +1,44 @@
+{
+	"locale": {
+		"message": ""
+ 	},
+	"Name": {
+		"message": "TickleTab"
+ 	},
+ 	"Description": {
+ 		"message": "TickleTab implements GTD-like Ticklers for tabs."
+ 	},
+	"ActiveTabs": {
+		"message": "Tabs for today"
+ 	}, 	
+	"closeSingleTabUntil": {
+		"message": "Close current tab until"
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Close all open tabs until"
+ 	}, 	
+	"allTabs": {
+		"message": "Apply to all tabs"
+ 	}, 	
+	"singleTab": {
+		"message": "Apply to current tab"
+ 	}, 	
+	"defineLabel": {
+		"message": "Save date as (optional)"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "Tickler Dashboard"
+ 	}, 	 	
+	"openAll": {
+		"message": "Open all"
+ 	},
+	"deleteTooltip": {
+		"message": "Delete"
+	},
+	"changeDateTooltip": {
+		"message": "Change date"
+	},
+	"undo": {
+		"message": "Undo"
+	}
+}

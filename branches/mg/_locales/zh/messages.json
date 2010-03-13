@@ -1,0 +1,44 @@
+{
+	"locale": {
+		"message": "zh-CN"
+ 	},
+	"Name": {
+		"message": "TickleTab (备忘便签)"
+ 	},
+ 	"Description": {
+ 		"message": "通过便签完成GTD爱好者们的时间管理"
+ 	},
+	"ActiveTabs": {
+		"message": "今日便签提醒"
+ 	}, 	
+	"closeSingleTabUntil": {
+		"message": "关闭当前标签至"
+ 	},
+	"closeMultipleTabsUntil": {
+		"message": "关闭所有开放标签至"
+ 	}, 	
+	"allTabs": {
+		"message": "应用至所有标签"
+ 	}, 	
+	"singleTab": {
+		"message": "应用至当前标签"
+ 	},
+	"defineLabel": {
+		"message": "保存日期为（可选）"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "备忘便签"
+ 	}, 	 	
+	"openAll": {
+		"message": "打开所有便签"
+ 	},
+	"deleteTooltip": {
+		"message": "删除"
+	},
+	"changeDateTooltip": {
+		"message": "改变日期"
+	},
+	"undo": {
+		"message": "撤销"
+	}
+}

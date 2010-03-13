@@ -1,0 +1,48 @@
+{
+	"locale": {
+		"message": "ru"
+ 	},
+	"Name": {
+		"message": "TickleTab"
+ 	},
+ 	"Description": {
+ 		"message": "TickleTab позволяет отложить ссылку на определенный день."
+ 	},
+	"ActiveTabs": {
+		"message": "Закладки сегодня"
+ 	}, 	
+	"closeTabUntil": {
+		"message": "Отложить текущую закладку до..."
+ 	}, 	
+	"closeSingleTabUntil": {
+		"message": "Отложить текущую закладку до..."
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Отложить все открытые закладки до..."
+ 	}, 	
+	"allTabs": {
+		"message": "Использовать все открытые закладки"
+ 	}, 	
+	"singleTab": {
+		"message": "Испоьзовать текущую закладку"
+ 	},
+ 	"defineLabel": {
+		"message": "Запомнить как (опционально)"
+ 	}, 	
+	"openAll": {
+		"message": "Открыть Все"
+ 	},
+	"TicklerDashboard": {
+		"message": "Все закладки"
+ 	}, 	 	
+	"deleteTooltip": {
+		"message": "Удалить"
+	},
+	"changeDateTooltip": {
+		"message": "Изменить Дату"
+	},
+	"undo": {
+		"message": "Отменить"
+	}
+
+}

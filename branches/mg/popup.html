@@ -1,0 +1,443 @@
+<style>
+body{
+  min-width:357px;
+  overflow-x:hidden;
+  font-size:8pt;
+}
+div#undo a:link{
+	/*background: FFCE0A;*/
+	color: black;
+	font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif;
+	font-size: 1.1em;
+}
+table {
+  min-width:357px;
+  overflow-x:hidden;
+  font-size:8pt;
+}
+td {
+	vertical-align:top;
+}
+img {
+  margin:5px;
+  border:0px;
+  vertical-align:middle;
+}
+img.ui-icon {
+	left:0.2em;
+	margin:-8px 5px 0 0;
+	position:absolute;
+	top:50%;
+}
+
+input {
+	height: 19px;
+	width: 70px;
+	color: #000000;
+	background: #ffffff;
+	border: 1px solid #000000
+}
+input.hasDatepicker{
+	background-color:transparent;
+	border:1px solid transparent;
+}
+input.hasDatepicker:hover{
+	background-color:white;
+	border:1px solid #000000;
+}
+</style>
+
+<link type="text/css" rel="stylesheet" href="ui-lightness/jquery-ui-1.7.2.custom.css">
+
+<script type="text/javascript" src="lib/jquery.min.js"></script>
+<script type="text/javascript" src="lib/jquery-ui.min.js"></script>
+<script type="text/javascript" src="lib/jquery.ui.datepicker-de.js"></script>
+<script type="text/javascript" charset="utf-8" src="lib/jquery.ui.datepicker-zh-CN.js"></script>
+<script type="text/javascript" charset="utf-8" src="lib/jquery.ui.datepicker-ru.js"></script>
+
+<script>
+	var multiple_tabs = false;
+	var openInBackground = false;
+	$(function() {
+		$.datepicker.setDefaults($.datepicker.regional[chrome.i18n.getMessage("locale")]);
+		$.datepicker.setDefaults({
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			minDate: 0,
+		});
+		$("#datepicker").datepicker({
+				dateFormat: "yymmdd",
+				onSelect : function (dateText) {
+					addDateLabel(dateText);
+					//addSingleTab(dateText);
+					addFunction(dateText);
+				}
+		});
+		$("#accordion").accordion({
+			autoHeight: false,
+			fillSpace: true,
+			event: "mouseover"
+		});
+		$('#today-list-actions').append($('<a href="javascript:void(0)"></a>')
+				.text(chrome.i18n.getMessage("openAll"))
+				.click(openAllTickleTabs)
+			);
+		$('#sm-switcher').click(function(){
+			multiple_tabs = !multiple_tabs;
+			if (multiple_tabs == true){
+				$('#close-heading').text(chrome.i18n.getMessage("closeMultipleTabsUntil"));
+				$('#sm-switcher').text(chrome.i18n.getMessage("singleTab"));
+			} else {
+				$('#close-heading').text(chrome.i18n.getMessage("closeSingleTabUntil"));
+				$('#sm-switcher').text(chrome.i18n.getMessage("allTabs"));
+			}
+		});
+	});
+
+	function addFunction(key){
+		if (multiple_tabs) {
+			addMultipleTabs(key)
+		} else {
+			addSingleTab(key)
+		}
+	}
+
+	function addDateLabel(key) {
+		var t = document.getElementById("new-date-label");
+		
+		if (t.value != '') {
+			chrome.extension.getBackgroundPage().STORAGE.addDateLabel(key, t.value);
+			t.value = '';
+		}
+	};
+	
+	function addTickleTab(tab, key) {		
+		chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title);
+		try {
+			chrome.tabs.remove(tab.id);
+		} catch (e) {
+			alert(e);
+		}
+	};
+
+	function addSingleTab(key) {
+		chrome.tabs.getAllInWindow(focusedWindowId,function(tabs){
+			if (tabs.length == 1) {
+				// open chrome://newtab to prevent chrome closing 
+				createEmptyTab();
+			}
+			chrome.tabs.getSelected(focusedWindowId, 
+				function ( tab ) {
+					addTickleTab(tab, key);
+				});
+		});
+	}
+
+	function addMultipleTabs(key) {
+		chrome.tabs.getAllInWindow(focusedWindowId,
+			function(tabs){
+				try {
+					var toRemove = [];
+					for(var i = 0, l = tabs.length; i < l; i++ ) {
+						var tab = tabs[i];
+						// do not update badge text
+						chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title, true);
+						toRemove.push(tab.id);
+					}
+					createEmptyTab();
+					for(var i = 0, l = toRemove.length; i < l; i++) {
+						chrome.tabs.remove(toRemove[i]);
+					}
+				} catch (e) {
+					alert(e);
+				}
+				chrome.extension.getBackgroundPage().updateBadgeText();
+			});
+	}
+
+	function createEmptyTab(){
+		chrome.tabs.create({
+				'windowId' : focusedWindowId,
+				'url' : 'chrome://newtab',
+				'selected' : false
+		});
+	}
+	
+	function shortenTabTitle(title) {
+		if (title.length > 35) {
+			title = title.substring(0,32) + '...';
+		}
+		return title;
+	}
+	
+	var focusedWindowId = undefined;
+	var currentWindowId = undefined;
+
+	function onLoad() {
+		chrome.windows.getCurrent(function(currentWindow) {
+				currentWindowId = currentWindow.id;
+				chrome.windows.getLastFocused(function(focusedWindow) {
+						focusedWindowId = focusedWindow.id;
+				});
+		});
+		updateTodayList();
+		updateDateLabelsList();
+		updateDashboard();
+	};
+
+	function updateTodayList() {
+		var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
+		var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
+		updateList(a, $('#today-list-content'), 0);
+	};
+
+	function updateDashboard(){
+		var a = chrome.extension.getBackgroundPage().STORAGE.getAllTickleTabs();
+		var t = $('#dashboard-content');
+		updateList(a, t, 2);
+	}
+
+	function getDateFromKey(key){
+		return key.substr(0,4) + '-' + key.substr(4,2) + '-' + key.substr(6,2)
+	}
+
+	function getKeyFromDate(datestr){
+		return datestr.substr(0,4) + datestr.substr(5,2) + datestr.substr(8,2);
+	}
+
+	function updateList(data, content, folder){
+		if (data != null && data.length > 0) {		
+			$(".ui-accordion-header").eq(folder).show();
+			// remove all child nodes 
+			content.html('');
+			for(var i = 0, l = data.length; i < l; i++ ) {
+				// key -> value :[{url, title}]
+				var ai = data[i];
+				var b = ai.value;
+				if (b != null) {
+					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
+						//{url, title}
+						var y = b[ii];
+						var kb = ai.key;
+						var datestr = getDateFromKey(kb);
+						printList(content,
+							datestr,
+							shortenTabTitle(y.title),
+							y.title,
+							bindChangeDate(kb, y.url, y.title),
+							bindOpenTickleTab(kb, y.url),
+							bindRemoveTickleTab(kb, y.url, y.title)
+						);
+					}
+				}
+			}
+		} else {
+			// hide first accordion if there are no tabs
+			$("#accordion").accordion('activate', 1);
+			$(".ui-accordion-header").eq(folder).hide().next().hide();
+		}
+	}
+
+	function changeDate(dateText, key, url, title){
+		var storeDate = getKeyFromDate(dateText);
+		chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
+		chrome.extension.getBackgroundPage().STORAGE.addTickleTab(storeDate, url, title);
+		updateTodayList();
+		updateDashboard();
+	}
+
+	function changeLabel(oldDate, newDate, title){
+		var oldKey = getKeyFromDate(oldDate);
+		var newKey = getKeyFromDate(newDate);
+		chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(oldKey, title);
+		chrome.extension.getBackgroundPage().STORAGE.addDateLabel(newKey, title);
+		updateDateLabelsList();
+	}
+	
+	function bindOpenTickleTab(key, url) {
+		return function() {
+			openTickleTab(key, url);
+		};
+	}
+	
+	function bindChangeDate(key, url, title) {
+		return function(dateText) {
+			changeDate(dateText, key, url, title)
+		};
+	}
+
+	function bindChangeLabel(datestr, label) {
+		return function(dateText){
+			changeLabel(datestr, dateText, label)
+		};
+	}
+
+	function bindAddTickleTab(key) {
+		return function() {
+			addFunction(key);
+		};
+	}
+
+	function bindRemoveTickleTab(key, url, title) {
+		return function() {
+			removeTickleTab(key, url);
+			$('#undo').html('')
+				.append($('<a href="javascript:void(0)"></a>')
+					.text(chrome.i18n.getMessage("undo"))
+					.click(function(){
+						chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, url, title)
+						updateDashboard();
+						updateTodayList();
+						$(this).parent().html('');
+					})
+				);
+			updateDashboard();
+			updateTodayList();
+		};
+	}
+	
+	function openAllTickleTabs() {
+		// open in background; otherwise: popup.html will close and terminate script
+		openInBackground = true;
+		// call on click for each node
+		$("#today-list-content .listlink").click();
+		window.close();
+	}
+	
+	function openTickleTab(key, url) {
+		try {
+			chrome.tabs.create({
+					'windowId' : focusedWindowId,
+					'url' : url,
+					'selected' : !openInBackground
+			});
+			// remove tickle tab from storage
+			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
+		} catch (e) {
+			alert(e);
+		}
+		// close self
+	}
+	
+	function removeTickleTab(key, url) {
+		try {
+			// remove tickle tab from storage
+			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
+		} catch (e) {
+			alert(e);
+		}
+	}
+
+	function bindRemoveDateLabel(key, title) {
+		return function() {
+			chrome.extension.getBackgroundPage().STORAGE.removeDateLabels(key, title);
+			$('#undo').html('')
+				.append($('<a href="javascript:void(0)"></a>')
+					.text(chrome.i18n.getMessage("undo"))
+					.click(function(){
+						chrome.extension.getBackgroundPage().STORAGE.addDateLabel(key, title)
+						updateDateLabelsList();
+						$(this).parent().html('');
+					})
+				);
+			updateDateLabelsList();
+		};
+	}
+	
+	// render date-labels component list
+	function updateDateLabelsList() {
+		var data = chrome.extension.getBackgroundPage().STORAGE.getDataLabels();
+		var table = $('#date-labels');
+		table.html('');
+		if (data != null && data.length > 0 ) {
+			for(var i = 0, l = data.length; i < l; i++ ) {
+				// key -> value: [label1, label 2]
+				var a = data[i];
+				var b = a.value;
+				var datestr = getDateFromKey(a.key);
+				if (b != null) {
+					for(var ii = 0, ll = b.length; ii < ll; ii++ ) {
+						var label = b[ii];
+						printList(table,
+							datestr,
+							label,
+							label,
+							bindChangeLabel(datestr, label),
+							bindAddTickleTab(a.key),
+							bindRemoveDateLabel(a.key, label)
+						);
+					}
+				}
+			}
+		}
+	}
+
+	function printList(table, datestr, label, tooltip, bindDatepickerSelect, bindClick, bindDelete){
+		table.append($('<tr></tr>')
+			.append($('<td></td>')
+				.append($('<input>')
+					.attr({
+						value: datestr,
+						readonly: 'true',
+						title:  chrome.i18n.getMessage("changeDateTooltip")
+					})
+					.datepicker({
+						dateFormat: 'yy-mm-dd',
+						showOtherMonths: true,
+						selectOtherMonths: true,
+						minDate: 0,
+						onSelect : bindDatepickerSelect
+					})
+				)
+			)
+			.append($('<td></td>')
+				.append($('<a href="javascript:void(0)"></a>')
+					.text(label)
+					.attr({
+						title: tooltip
+					})
+					.click(bindClick)
+					.addClass('listlink')
+				)
+			)
+			.append($('<td></td>')
+				.append($('<a href="javascript:void(0)"></a>')
+					.append($('<img>')
+						.attr({
+							src: 'images/delete.png',
+							alt: '(x)',
+							title: chrome.i18n.getMessage("deleteTooltip"),
+							width: "10",
+							height: "10"
+						})
+						.click(bindDelete)
+					)
+				)
+			)
+		);
+	}
+</script>
+
+<body onload="onLoad()">
+	<div id = "undo" align="right"></div>
+	<div id='accordion' style='height:400px'>
+		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("ActiveTabs"));</script></a></h3>
+		<div id='today-list'>
+			<table id='today-list-content'></table>
+			<div align="right" id='today-list-actions'></div>
+		</div>
+		<h3><a href='#' id='close-heading'><script type="text/javascript">document.write(chrome.i18n.getMessage("closeSingleTabUntil"));</script></a></h3>		
+		<div id='close'>
+			<table id='date-labels'></table>
+			<div><script type="text/javascript">document.write(chrome.i18n.getMessage("defineLabel"));</script>: <input id="new-date-label" value=''></div>
+			<div id='datepicker'></div>
+			<div align="right"><a href="javascript:void(0)" id="sm-switcher">
+					<script type="text/javascript">document.write(chrome.i18n.getMessage("allTabs"));</script>
+			</a></div>
+		</div>
+		<h3><a href='#'><script type="text/javascript">document.write(chrome.i18n.getMessage("TicklerDashboard"));</script></a></h3>
+		<div id='dashboard'>
+			<table id='dashboard-content'></table>
+		</div>
+	</div>
+</body>

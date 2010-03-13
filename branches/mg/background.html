@@ -1,0 +1,358 @@
+<html>
+<head>
+<script type="text/javascript">
+
+var STORAGE = function () {	
+	
+	// private functions and properties
+	var KEY_PREFIX = "tickle_";
+	var DATE_LABEL_KEY_PREFIX = "dlabel_tickle_";
+	var st = window.localStorage;
+	
+	var sortfn = function (a, b) {
+		if (a.key == b.key) {
+			return 0;
+		} 
+		if (a.key > b.key ) {
+			return 1;
+		}
+		return -1;
+	};
+	
+	return {
+		
+		clear : function() {
+			st.clear();
+			updateBadgeText();
+		},
+		
+     	     	/**
+     	     	* convert object to string (JSON) and save it
+     	     	*/
+		setObject : function(key, value) {
+			st.setItem(key, JSON.stringify(value));
+		},
+		
+		/**
+		* @return JSON obejct creates from local storage saved value  
+		*/
+		getObject : function(key) {
+			var value = st.getItem(key);
+			if (value == null) {
+				return null;
+			} else {           
+				return JSON.parse(value);
+			}
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* add tickletab to storage
+     	     	*
+     	     	* @param key - YYYYMMDD
+     	     	* @param url - tab url
+     	     	* @param tabtitle - string title
+     	     	*/
+     	     	addTickleTab : function(key, url, tabtitle, doNotUpdateBadgeText) {
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( url == null || url == "") {
+     	     			return "empty url param";
+     	     		}
+     	     		if ( tabtitle == null || tabtitle == "" ) {
+     	     			return "empty tabtitle param";
+     	     		}     	
+     	     		
+     	     		// Store in local Storage
+     	     		var a = this.getObject(KEY_PREFIX + key);     
+     	     		
+     	     		if ( a == null ) {
+     	     			// make new one 
+     	     			a = [];
+     	     			a.push({'url' : url , 'title' : tabtitle});     		
+     	     		} else {
+     	     			// add to the existing one
+     	     			// merge if the url is the same
+     	     			var p = null;
+     	     			
+     	     			for(var i = 0, l = a.length; i < l; i++ ) {
+     	     				var x = a[i];
+     	     				if (x.url == url) {
+     	     					p = x; 
+     	     					break;
+     	     				}
+     	     			}
+     	     			
+     	     			
+     	     			if( p == null) {
+     	     				// append new one
+     	     				a.push({'url' : url , 'title' : tabtitle}); 
+     	     			} else {			
+     	     				p.title = tabtitle; 
+     	     			}     		
+     	     		}
+     	     		this.setObject(KEY_PREFIX + key, a);
+     	     		if (!doNotUpdateBadgeText) {
+     	     			updateBadgeText();
+     	     		}
+     	     	},
+     	     	
+     	     	/**
+     	     	* remove tickletabs
+     	     	*
+     	     	* @param key - YYYYMMDD
+     	     	* @param url (optional) - tab url to remove
+     	     	*/
+     	     	removeTickleTabs : function(key, url) {
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( url == null || url == "") {
+     	     			st.removeItem(KEY_PREFIX + key);
+     	     		} else {
+     	     			var a = this.getObject(KEY_PREFIX + key);     
+     	     			if (a != null) {
+     	     				var r = [];
+     	     				
+     	     				for(var i = 0, l = a.length; i < l; i++ ) {
+     	     					var x = a[i];
+     	     					if (x.url != url) {
+     	     						r.push(x); 
+     	     					}
+     	     				}
+     	     				a = r;
+     	     			}
+     	     			if (a.length == 0) {
+     	     				// remove item if there are no elements 
+     	     				st.removeItem(KEY_PREFIX + key);
+     	     			} else {
+     	     				// set new content     	     	     	     	     
+     	     				this.setObject(KEY_PREFIX + key, a);
+     	     			}
+     	     		}
+     	     		updateBadgeText();
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* @return array of tickletabs for key specified 
+     	     	*/
+     	     	getTickleTab : function(key) {     	     
+     	     		if ( key == null || key == "" ) {
+     	     			return null;
+     	     		}
+     	     		
+     	     		return this.getObject(KEY_PREFIX + key); 
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* @return all tickletabs from local storage
+     	     	*/
+     	     	getAllTickleTabs : function() {
+     	     		var res = [];
+     	     		for(var i = 0, l = st.length; i < l; i++) {
+     	     			var y = st.key(i);
+     	     			// begin with 
+     	     			if (y.indexOf(KEY_PREFIX) == 0 ) {
+     	     				res.push({'key': y.substr(KEY_PREFIX.length) , 'value' : this.getObject(y)});
+     	     			}                                                              
+     	     		}
+     	     		
+     	     		res.sort(sortfn);
+     	     		return res;
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* @return tickletabs from local storage filtered with the 
+     	     	*/
+     	     	getTickleTabs : function(key) {
+     	     		var res = [];
+     	     		for(var i = 0, l = st.length; i < l; i++) {
+     	     			var y = st.key(i);
+     	     			// begin with
+     	     			if (y.indexOf(KEY_PREFIX) == 0 ) {
+     	     				var x = y.substr(KEY_PREFIX.length);
+     	     				if ( x <= key ) {
+     	     					res.push({'key': x, 'value' : this.getObject(y)});     	     	     	     	     	     
+     	     				}
+     	     			}
+     	     		}
+     	     		
+     	     		res.sort(sortfn);
+     	     		
+     	     		return res;
+     	     	},
+     	     	
+     	     	// date label functions
+     	     	
+     	     	/**
+     	     	* @return an array of all defined data labels {key : date, value: [text, ...] }  
+     	     	*/
+     	     	getDataLabels : function(key) {
+     	     		var res = [];
+     	     		for(var i = 0, l = st.length; i < l; i++) {
+     	     			var y = st.key(i);
+     	     			// begin with
+     	     			if (y.indexOf(DATE_LABEL_KEY_PREFIX) == 0 ) {
+     	     				var x = y.substr(DATE_LABEL_KEY_PREFIX.length);
+     	     				if ( key == null || x <= key ) {
+     	     					res.push({'key': x, 'value' : this.getObject(y)});     	     	     	     	     	     
+     	     				}
+     	     			}
+     	     		}
+     	     		res.sort(sortfn);
+     	     		
+     	     		return res;
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* add data label to storage
+     	     	*
+     	     	* @param key - YYYYMMDD
+     	     	* @param title
+     	     	*/
+     	     	addDateLabel : function(key, title) {
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( title == null || title == "" ) {
+     	     			return "empty title param";
+     	     		}     	
+     	     		
+     	     		var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
+     	     		
+     	     		if ( a == null ) {
+     	     			// make new one 
+     	     			a = [];
+     	     			a.push(title);     		
+     	     		} else {
+     	     			// add to the existing one
+     	     			var p = null;
+     	     			
+     	     			for(var i = 0, l = a.length; i < l; i++ ) {
+     	     				var x = a[i];
+     	     				if (x == title) {
+     	     					p = x; 
+     	     					break;
+     	     				}
+     	     			}
+     	     			
+     	     			if( p == null) {
+     	     				// add missing
+     	     				a.push(title);
+     	     				
+     	     			}
+     	     			
+     	     			
+     	     		}
+     	     		this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
+     	     	},
+     	     	
+     	     	/**
+     	     	* remove data label
+     	     	*
+     	     	* @param key - YYYYMMDD
+     	     	* @param title (optional) - date label to remove
+     	     	*/
+     	     	removeDateLabels : function(key, title) {
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( title == null || title == "") {
+     	     			st.removeItem(DATE_LABEL_KEY_PREFIX + key);
+     	     		} else {
+     	     			var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
+     	     			if (a != null) {
+     	     				var r = [];
+     	     				
+     	     				for(var i = 0, l = a.length; i < l; i++ ) {
+     	     					var x = a[i];
+     	     					if (x != title) {
+     	     						r.push(x); 
+     	     					}
+     	     				}
+     	     				a = r;
+     	     			}
+     	     			if (a.length == 0) {
+     	     				// remove item if there are no elements 
+     	     				st.removeItem(DATE_LABEL_KEY_PREFIX + key);
+     	     			} else {
+     	     				// set new content     	     	     	     	     
+     	     				this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
+     	     			}
+     	     		}
+     	     	}
+     	     	
+	};
+}();
+
+function getLocalStorage() {
+	return STORAGE;
+}
+
+function showOptions() {
+	// If the extension has not been run before ...
+	if (! window.localStorage.already_run) {
+		// ... show options.html
+		chrome.tabs.create( {url : "options.html"} );
+		
+		window.localStorage.already_run = true;
+	}
+}
+
+function init(){
+	showOptions();
+	
+	chrome.browserAction.setBadgeBackgroundColor({color:[255, 206, 10, 255]});
+	chrome.browserAction.setBadgeText({text: ""});
+	startRequest();
+}
+
+
+function updateBadgeText() {
+	var key = getCurrentDateAsKey();
+	var a = STORAGE.getTickleTabs(key);
+	var badgelength = 0;
+	if (a != null ) {
+		for(var i = 0, l = a.length; i < l; i++ ) {
+			badgelength += a[i].value.length;
+		}
+	}
+	if (badgelength > 0){
+		chrome.browserAction.setBadgeText({text: String(badgelength)});
+	} else {
+		chrome.browserAction.setBadgeText({
+		text: ''});
+	}
+};
+
+function startRequest(){
+	updateBadgeText();
+	
+	var dt = new Date()
+	var ms = dt.getTime();
+	var tz = dt.getTimezoneOffset() * 60000;
+	var dayinms = (ms - tz) %  86400000;
+	var untilMidnight = 86400000 - dayinms;
+	
+	window.setTimeout(startRequest, untilMidnight);
+};
+
+function getCurrentDateAsKey() {
+	var d = new Date();
+	var dd = d.getDate();
+	if (dd < 10 ) {
+		dd = '0' + dd;
+	}
+	var mm = d.getMonth() + 1;
+	if (mm < 10) {
+		mm = '0' + mm;
+	}
+	return d.getFullYear() + '' + mm +'' +  dd;
+};
+
+
+</script>
+</head>
+<body onload="init()">
+</body>
+</html>
