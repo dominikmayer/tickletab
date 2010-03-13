@@ -18,10 +18,10 @@
 		"message": "Close all open tabs until"
  	}, 	
 	"allTabs": {
-		"message": "All tabs"
+		"message": "Apply to all tabs"
  	}, 	
 	"singleTab": {
-		"message": "Single tab"
+		"message": "Apply to current tab"
  	}, 	
 	"defineLabel": {
 		"message": "Save date as (optional)"
