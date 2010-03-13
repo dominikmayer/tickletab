@@ -2,13 +2,7 @@
 <head>
 <script type="text/javascript">
 
-var iStorageType = 1;						// 2 := Storage in Bookmarks
-
-var sBookmarkRootId = null;	
-var sBookmarkRootTitle = "TickleTabs";
-
-var STORAGE = function () {
-	
+var STORAGE = function () {	
 	
 	// private functions and properties
 	var KEY_PREFIX = "tickle_";
@@ -16,20 +10,15 @@ var STORAGE = function () {
 	var st = window.localStorage;
 	
 	var sortfn = function (a, b) {
-     	     	     		     if (a.key == b.key) {
-     	     	     		     	     return 0;
-     	     	     		     } 
-     	     	     		     if (a.key > b.key ) {
-     	     	     		     	     return 1;
-     	     	     		     }
-     	     	     		     return -1;
-     	     	     };
-     	     	     
-     	 // logging
-     	 var log = function (txt) {
-     	 	 // console.log(txt);
-     	 };
-     	 
+		if (a.key == b.key) {
+			return 0;
+		} 
+		if (a.key > b.key ) {
+			return 1;
+		}
+		return -1;
+	};
+	
 	return {
 		
 		clear : function() {
@@ -48,14 +37,14 @@ var STORAGE = function () {
 		* @return JSON obejct creates from local storage saved value  
 		*/
 		getObject : function(key) {
-     	     	     var value = st.getItem(key);
-     	     	     if (value == null) {
-     	     	     	     return null;
-     	     	     } else {           
-     	     	     	     return JSON.parse(value);
-     	     	     }
+			var value = st.getItem(key);
+			if (value == null) {
+				return null;
+			} else {           
+				return JSON.parse(value);
+			}
      	     	}, 
-
+     	     	
      	     	/**
      	     	* add tickletab to storage
      	     	*
@@ -63,170 +52,158 @@ var STORAGE = function () {
      	     	* @param url - tab url
      	     	* @param tabtitle - string title
      	     	*/
-     	     	addTickleTab : function(key, url, tabtitle) {
-     	     	     if ( key == null || key == "" ) {
-     	     	     	     return "empty key param";
-     	     	     }
-     	     	     if ( url == null || url == "") {
-     	     	     	     return "empty url param";
-     	     	     }
-     	     	     if ( tabtitle == null || tabtitle == "" ) {
-     	     	     	     return "empty tabtitle param";
-     	     	     }     	
-     	     	     
-     	     	     if (iStorageType == 2) {
-     	     	    	 // Store in bookmarks
-     			    	chrome.bookmarks.create({"parentId": sBookmarkRootId, "title": tabtitle, "url": url}, function(jNode) {});
-
-     	     	    	 
-     	     	     } else {     	     	    
-     	     	    	 // Store in local Storage
-	     	     	     var a = this.getObject(KEY_PREFIX + key);     
-	     	     	     
-	     	     	     // log("saved value : " + a); 
-	     	     	     
-	     	     	     if ( a == null ) {
-	     	     	     	     // make new one 
-	     	     	     	     // log("make new for key: " + key); 
-	     	     	     	     a = [];
-	     	     	     	     a.push({'url' : url , 'title' : tabtitle});     		
-	     	     	     } else {
-	     	     	     	     // add to the existing one
-	     	     	     	     // merge if the url is the same
-	     	     	     	     var p = null;
-	     	     	     	     
-	     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
-	     	     	     	     	     var x = a[i];
-	     	     	     	     	     if (x.url == url) {
-	     	     	     	     	     	     p = x; 
-	     	     	     	     	     	     break;
-	     	     	     	     	     }
-	     	     	     	     }
-	     	     	     	     
-	     	     	     	     // log("tickle for url : " + url + " = " + p); 
-	     	     	     	     
-	     	     	     	     if( p == null) {
-	     	     	     	     	     // append new one
-	     	     	     	     	     a.push({'url' : url , 'title' : tabtitle}); 
-	     	     	     	     } else {			
-	     	     	     	     	     p.title = tabtitle; 
-	     	     	     	     }     		
-	     	     	     }
-	     	     	     this.setObject(KEY_PREFIX + key, a);
-	     	     	     updateBadgeText();
-     	     	     }
-     	       },
-     	       
-     	     /**
-     	     * remove tickletabs
-     	     *
-     	     * @param key - YYYYMMDD
-     	     * @param url (optional) - tab url to remove
-     	     */
-     	     removeTickleTabs : function(key, url) {
-     	     	     if ( key == null || key == "" ) {
-     	     	     	     return "empty key param";
-     	     	     }
-     	     	     if ( url == null || url == "") {
-     	     	     	     // log("remove all tickletabs for key : " + key);
-     	     	     	     st.removeItem(KEY_PREFIX + key);
-     	     	     } else {
-     	     	     	     // log("remove tickletabs for url : " + url);
-     	     	     	     var a = this.getObject(KEY_PREFIX + key);     
-     	     	     	     if (a != null) {
-     	     	     	     	     var r = [];
-     	     	     	     	     
-     	     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
-     	     	     	     	     	     var x = a[i];
-     	     	     	     	     	     if (x.url != url) {
-     	     	     	     	     	     	     r.push(x); 
-     	     	     	     	     	     }
-     	     	     	     	     }
-     	     	     	     	     a = r;
-     	     	     	     }
-     	     	     	     if (a.length == 0) {
-     	     	     	     	     // remove item if there are no elements 
-     	     	     	     	     st.removeItem(KEY_PREFIX + key);
-     	     	     	     } else {
-				     // set new content     	     	     	     	     
-     	     	     	     	     this.setObject(KEY_PREFIX + key, a);
-     	     	     	     }
-     	     	     }
-     	     	     updateBadgeText();
-     	     }, 
-     	     
-     	     /**
-     	     * @return array of tickletabs for key specified 
-     	     */
-     	     getTickleTab : function(key) {     	     
-     	     	     if ( key == null || key == "" ) {
-     	     	     	     return null;
-     	     	     }
-     	     	     
-     	     	     return this.getObject(KEY_PREFIX + key); 
-     	     }, 
-     	     
-     	     /**
-     	     * @return all tickletabs from local storage
-     	     */
-     	     getAllTickleTabs : function() {
-     	     	     var res = [];
-     	     	     for(var i = 0, l = st.length; i < l; i++) {
-     	     	     	     var y = st.key(i);
-     	     	     	     // begin with 
-     	     	     	     if (y.indexOf(KEY_PREFIX) == 0 ) {
-     	     	     	     	     res.push({'key': y.substr(KEY_PREFIX.length) , 'value' : this.getObject(y)});
-     	     	     	     }                                                              
-     	     	     }
-     	     	     
-     	     	     res.sort(sortfn);
-     	     	     return res;
-     	     }, 
-
-       	     /**
-     	     * @return tickletabs from local storage filtered with the 
-     	     */
-     	     getTickleTabs : function(key) {
-     	     	     var res = [];
-     	     	     for(var i = 0, l = st.length; i < l; i++) {
-     	     	     	     var y = st.key(i);
-     	     	     	     // begin with
-     	     	     	     if (y.indexOf(KEY_PREFIX) == 0 ) {
-     	     	     	     	     var x = y.substr(KEY_PREFIX.length);
-     	     	     	     	     // log("x = " + x);
-     	     	     	     	     if ( x <= key ) {
-     	     	     	     	     	     res.push({'key': x, 'value' : this.getObject(y)});     	     	     	     	     	     
-     	     	     	     	     }
-     	     	     	     }
-     	     	     }
-     	     	     
-     	     	     res.sort(sortfn);
-     	     	     
-     	     	     return res;
-     	     },
-     	     
-     	     // datum label functions
-     	     
-     	     /**
-     	      * @return an array of all defined data labels {key : date, value: [text, ...] }  
-     	      */
-     	     getDataLabels : function(key) {
-     	     	     var res = [];
-     	     	     for(var i = 0, l = st.length; i < l; i++) {
-     	     	     	     var y = st.key(i);
-     	     	     	     // begin with
-     	     	     	     if (y.indexOf(DATE_LABEL_KEY_PREFIX) == 0 ) {
-     	     	     	     	     var x = y.substr(DATE_LABEL_KEY_PREFIX.length);
-     	     	     	     	     if ( key == null || x <= key ) {
-     	     	     	     	     	     res.push({'key': x, 'value' : this.getObject(y)});     	     	     	     	     	     
-     	     	     	     	     }
-     	     	     	     }
-     	     	     }
-     	     	     res.sort(sortfn);
-     	     	     
-     	     	     return res;
-     	     }, 
-     	     
+     	     	addTickleTab : function(key, url, tabtitle, doNotUpdateBadgeText) {
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( url == null || url == "") {
+     	     			return "empty url param";
+     	     		}
+     	     		if ( tabtitle == null || tabtitle == "" ) {
+     	     			return "empty tabtitle param";
+     	     		}     	
+     	     		
+     	     		// Store in local Storage
+     	     		var a = this.getObject(KEY_PREFIX + key);     
+     	     		
+     	     		if ( a == null ) {
+     	     			// make new one 
+     	     			a = [];
+     	     			a.push({'url' : url , 'title' : tabtitle});     		
+     	     		} else {
+     	     			// add to the existing one
+     	     			// merge if the url is the same
+     	     			var p = null;
+     	     			
+     	     			for(var i = 0, l = a.length; i < l; i++ ) {
+     	     				var x = a[i];
+     	     				if (x.url == url) {
+     	     					p = x; 
+     	     					break;
+     	     				}
+     	     			}
+     	     			
+     	     			
+     	     			if( p == null) {
+     	     				// append new one
+     	     				a.push({'url' : url , 'title' : tabtitle}); 
+     	     			} else {			
+     	     				p.title = tabtitle; 
+     	     			}     		
+     	     		}
+     	     		this.setObject(KEY_PREFIX + key, a);
+     	     		if (!doNotUpdateBadgeText) {
+     	     			updateBadgeText();
+     	     		}
+     	     	},
+     	     	
+     	     	/**
+     	     	* remove tickletabs
+     	     	*
+     	     	* @param key - YYYYMMDD
+     	     	* @param url (optional) - tab url to remove
+     	     	*/
+     	     	removeTickleTabs : function(key, url) {
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( url == null || url == "") {
+     	     			st.removeItem(KEY_PREFIX + key);
+     	     		} else {
+     	     			var a = this.getObject(KEY_PREFIX + key);     
+     	     			if (a != null) {
+     	     				var r = [];
+     	     				
+     	     				for(var i = 0, l = a.length; i < l; i++ ) {
+     	     					var x = a[i];
+     	     					if (x.url != url) {
+     	     						r.push(x); 
+     	     					}
+     	     				}
+     	     				a = r;
+     	     			}
+     	     			if (a.length == 0) {
+     	     				// remove item if there are no elements 
+     	     				st.removeItem(KEY_PREFIX + key);
+     	     			} else {
+     	     				// set new content     	     	     	     	     
+     	     				this.setObject(KEY_PREFIX + key, a);
+     	     			}
+     	     		}
+     	     		updateBadgeText();
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* @return array of tickletabs for key specified 
+     	     	*/
+     	     	getTickleTab : function(key) {     	     
+     	     		if ( key == null || key == "" ) {
+     	     			return null;
+     	     		}
+     	     		
+     	     		return this.getObject(KEY_PREFIX + key); 
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* @return all tickletabs from local storage
+     	     	*/
+     	     	getAllTickleTabs : function() {
+     	     		var res = [];
+     	     		for(var i = 0, l = st.length; i < l; i++) {
+     	     			var y = st.key(i);
+     	     			// begin with 
+     	     			if (y.indexOf(KEY_PREFIX) == 0 ) {
+     	     				res.push({'key': y.substr(KEY_PREFIX.length) , 'value' : this.getObject(y)});
+     	     			}                                                              
+     	     		}
+     	     		
+     	     		res.sort(sortfn);
+     	     		return res;
+     	     	}, 
+     	     	
+     	     	/**
+     	     	* @return tickletabs from local storage filtered with the 
+     	     	*/
+     	     	getTickleTabs : function(key) {
+     	     		var res = [];
+     	     		for(var i = 0, l = st.length; i < l; i++) {
+     	     			var y = st.key(i);
+     	     			// begin with
+     	     			if (y.indexOf(KEY_PREFIX) == 0 ) {
+     	     				var x = y.substr(KEY_PREFIX.length);
+     	     				if ( x <= key ) {
+     	     					res.push({'key': x, 'value' : this.getObject(y)});     	     	     	     	     	     
+     	     				}
+     	     			}
+     	     		}
+     	     		
+     	     		res.sort(sortfn);
+     	     		
+     	     		return res;
+     	     	},
+     	     	
+     	     	// date label functions
+     	     	
+     	     	/**
+     	     	* @return an array of all defined data labels {key : date, value: [text, ...] }  
+     	     	*/
+     	     	getDataLabels : function(key) {
+     	     		var res = [];
+     	     		for(var i = 0, l = st.length; i < l; i++) {
+     	     			var y = st.key(i);
+     	     			// begin with
+     	     			if (y.indexOf(DATE_LABEL_KEY_PREFIX) == 0 ) {
+     	     				var x = y.substr(DATE_LABEL_KEY_PREFIX.length);
+     	     				if ( key == null || x <= key ) {
+     	     					res.push({'key': x, 'value' : this.getObject(y)});     	     	     	     	     	     
+     	     				}
+     	     			}
+     	     		}
+     	     		res.sort(sortfn);
+     	     		
+     	     		return res;
+     	     	}, 
+     	     	
      	     	/**
      	     	* add data label to storage
      	     	*
@@ -234,84 +211,82 @@ var STORAGE = function () {
      	     	* @param title
      	     	*/
      	     	addDateLabel : function(key, title) {
-     	     	     if ( key == null || key == "" ) {
-     	     	     	     return "empty key param";
-     	     	     }
-     	     	     if ( title == null || title == "" ) {
-     	     	     	     return "empty title param";
-     	     	     }     	
-     	     	     
-     	     	     var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
-     	     	     
-     	     	     if ( a == null ) {
-     	     	     	     // make new one 
-     	     	     	     a = [];
-     	     	     	     a.push(title);     		
-     	     	     } else {
-     	     	     	     // add to the existing one
-     	     	     	     var p = null;
-     	     	     	     
-     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
-     	     	     	     	     var x = a[i];
-     	     	     	     	     if (x == title) {
-     	     	     	     	     	     p = x; 
-     	     	     	     	     	     break;
-     	     	     	     	     }
-     	     	     	     }
-     	     	     	     
-     	     	     	     if( p == null) {
-     	     	     	     	    // add missing
-     	     	     	     	    a.push(title);
-
-     	     	     	     }
-     	     	     	          	     	     	     	     
-
-     	     	     }
-     	     	     this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
-     	       },
-     	       
-     	     /**
-     	     * remove data label
-     	     *
-     	     * @param key - YYYYMMDD
-     	     * @param title (optional) - date label to remove
-     	     */
-     	     removeDateLabels : function(key, title) {
-     	     	     if ( key == null || key == "" ) {
-     	     	     	     return "empty key param";
-     	     	     }
-     	     	     if ( title == null || title == "") {
-     	     	     	     // log("remove all tickletabs for key : " + key);
-     	     	     	     st.removeItem(DATE_LABEL_KEY_PREFIX + key);
-     	     	     } else {
-     	     	     	     // log("remove tickletabs for url : " + url);
-     	     	     	     var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
-     	     	     	     if (a != null) {
-     	     	     	     	     var r = [];
-     	     	     	     	     
-     	     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
-     	     	     	     	     	     var x = a[i];
-     	     	     	     	     	     if (x != title) {
-     	     	     	     	     	     	     r.push(x); 
-     	     	     	     	     	     }
-     	     	     	     	     }
-     	     	     	     	     a = r;
-     	     	     	     }
-     	     	     	     if (a.length == 0) {
-     	     	     	     	     // remove item if there are no elements 
-     	     	     	     	     st.removeItem(DATE_LABEL_KEY_PREFIX + key);
-     	     	     	     } else {
-				     // set new content     	     	     	     	     
-     	     	     	     	     this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
-     	     	     	     }
-     	     	     }
-     	     }
-     	       
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( title == null || title == "" ) {
+     	     			return "empty title param";
+     	     		}     	
+     	     		
+     	     		var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
+     	     		
+     	     		if ( a == null ) {
+     	     			// make new one 
+     	     			a = [];
+     	     			a.push(title);     		
+     	     		} else {
+     	     			// add to the existing one
+     	     			var p = null;
+     	     			
+     	     			for(var i = 0, l = a.length; i < l; i++ ) {
+     	     				var x = a[i];
+     	     				if (x == title) {
+     	     					p = x; 
+     	     					break;
+     	     				}
+     	     			}
+     	     			
+     	     			if( p == null) {
+     	     				// add missing
+     	     				a.push(title);
+     	     				
+     	     			}
+     	     			
+     	     			
+     	     		}
+     	     		this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
+     	     	},
+     	     	
+     	     	/**
+     	     	* remove data label
+     	     	*
+     	     	* @param key - YYYYMMDD
+     	     	* @param title (optional) - date label to remove
+     	     	*/
+     	     	removeDateLabels : function(key, title) {
+     	     		if ( key == null || key == "" ) {
+     	     			return "empty key param";
+     	     		}
+     	     		if ( title == null || title == "") {
+     	     			st.removeItem(DATE_LABEL_KEY_PREFIX + key);
+     	     		} else {
+     	     			var a = this.getObject(DATE_LABEL_KEY_PREFIX + key);     
+     	     			if (a != null) {
+     	     				var r = [];
+     	     				
+     	     				for(var i = 0, l = a.length; i < l; i++ ) {
+     	     					var x = a[i];
+     	     					if (x != title) {
+     	     						r.push(x); 
+     	     					}
+     	     				}
+     	     				a = r;
+     	     			}
+     	     			if (a.length == 0) {
+     	     				// remove item if there are no elements 
+     	     				st.removeItem(DATE_LABEL_KEY_PREFIX + key);
+     	     			} else {
+     	     				// set new content     	     	     	     	     
+     	     				this.setObject(DATE_LABEL_KEY_PREFIX + key, a);
+     	     			}
+     	     		}
+     	     	}
+     	     	
 	};
 }();
 
 function getLocalStorage() {
-     return STORAGE;
+	return STORAGE;
 }
 
 function showOptions() {
@@ -328,32 +303,7 @@ function init(){
 	showOptions();
 	
 	chrome.browserAction.setBadgeBackgroundColor({color:[255, 206, 10, 255]});
-	chrome.browserAction.setBadgeText({
-			text: ""});
-	
-	// If Storage in bookmarks ...
-	if (iStorageType == 2) {
-		// Create a root node if no one exists.
-		chrome.bookmarks.getChildren('1', function(ajNode) {
-			// Check if a root node already exists.
-	        for (i = 0; i < ajNode.length; i++) {
-	            if (ajNode[i].title == sBookmarkRootTitle) {
-	            	sBookmarkRootId = ajNode[i].id;
-	            	break;	            	
-	            }
-	        }
-	        
-		    // If no root node was found ...
-		    if (sBookmarkRootId == null) {
-		    	// ... create one
-		    	chrome.bookmarks.create({"parentId": "1", "title": sBookmarkRootTitle}, function(jNode) {
-		    			sBookmarkRootId = jNode.id;
-					}
-			 	);
-		    }	        
-	    });
-	}
-	
+	chrome.browserAction.setBadgeText({text: ""});
 	startRequest();
 }
 
@@ -376,7 +326,6 @@ function updateBadgeText() {
 };
 
 function startRequest(){
-	//var delay = 1800000; // half hour
 	updateBadgeText();
 	
 	var dt = new Date()
@@ -385,8 +334,6 @@ function startRequest(){
 	var dayinms = (ms - tz) %  86400000;
 	var untilMidnight = 86400000 - dayinms;
 	
-	// console.log("until midnight = " + untilMidnight);
-	// var delay = 1000; // one second (for testing)
 	window.setTimeout(startRequest, untilMidnight);
 };
 

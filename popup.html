@@ -56,16 +56,9 @@ input.hasDatepicker:hover{
 <script type="text/javascript" charset="utf-8" src="lib/jquery.ui.datepicker-ru.js"></script>
 
 <script>
-	//var addFunction = function(key) {addSingleTab(key)};
-	//var addFunction = function(key) {addMultipleTabs(key)};
 	var multiple_tabs = false;
 	var openInBackground = false;
 	$(function() {
-		//var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
-		//var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
-		//if (a != null && a.length > 0) {} else {
-		//	$("#tl").hide().next().hide()
-		//}
 		$.datepicker.setDefaults($.datepicker.regional[chrome.i18n.getMessage("locale")]);
 		$.datepicker.setDefaults({
 			showOtherMonths: true,
@@ -102,7 +95,7 @@ input.hasDatepicker:hover{
 	});
 
 	function addFunction(key){
-		if (multiple_tabs == true) {
+		if (multiple_tabs) {
 			addMultipleTabs(key)
 		} else {
 			addSingleTab(key)
@@ -130,7 +123,7 @@ input.hasDatepicker:hover{
 	function addSingleTab(key) {
 		chrome.tabs.getAllInWindow(focusedWindowId,function(tabs){
 			if (tabs.length == 1) {
-				// open chrome://newtab to prevent chrome from closing 
+				// open chrome://newtab to prevent chrome closing 
 				createEmptyTab();
 			}
 			chrome.tabs.getSelected(focusedWindowId, 
@@ -143,12 +136,22 @@ input.hasDatepicker:hover{
 	function addMultipleTabs(key) {
 		chrome.tabs.getAllInWindow(focusedWindowId,
 			function(tabs){
-				for(var i = 0, l = tabs.length; i < l; i++ ) {
-					if (i == tabs.length-1) {
-						createEmptyTab();
+				try {
+					var toRemove = [];
+					for(var i = 0, l = tabs.length; i < l; i++ ) {
+						var tab = tabs[i];
+						// do not update badge text
+						chrome.extension.getBackgroundPage().STORAGE.addTickleTab(key, tab.url, tab.title, true);
+						toRemove.push(tab.id);
 					}
-					addTickleTab(tabs[i], key);
+					createEmptyTab();
+					for(var i = 0, l = toRemove.length; i < l; i++) {
+						chrome.tabs.remove(toRemove[i]);
+					}
+				} catch (e) {
+					alert(e);
 				}
+				chrome.extension.getBackgroundPage().updateBadgeText();
 			});
 	}
 
@@ -175,30 +178,12 @@ input.hasDatepicker:hover{
 				currentWindowId = currentWindow.id;
 				chrome.windows.getLastFocused(function(focusedWindow) {
 						focusedWindowId = focusedWindow.id;
-						// loadWindowList();
 				});
 		});
 		updateTodayList();
 		updateDateLabelsList();
 		updateDashboard();
 	};
-
-//	function getCurrentDateAsKey() {
-//		var d = new Date();
-//		var dd = d.getDate();
-//		if (dd < 10 ) {
-//			dd = '0' + dd;
-//		}
-//		var mm = d.getMonth() + 1;
-//		if (mm < 10) {
-//			mm = '0' + mm;
-//		}
-//		return d.getFullYear() + '' + mm +'' +  dd;
-//	};
-
-	function fillTodayArray() {
-		//for 
-	}
 
 	function updateTodayList() {
 		var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
@@ -235,7 +220,6 @@ input.hasDatepicker:hover{
 						var y = b[ii];
 						var kb = ai.key;
 						var datestr = getDateFromKey(kb);
-						//alert(y.title + kb);
 						printList(content,
 							datestr,
 							shortenTabTitle(y.title),
@@ -290,7 +274,6 @@ input.hasDatepicker:hover{
 
 	function bindAddTickleTab(key) {
 		return function() {
-			//addSingleTab(key);
 			addFunction(key);
 		};
 	}
@@ -334,7 +317,6 @@ input.hasDatepicker:hover{
 			alert(e);
 		}
 		// close self
-		// window.close();
 	}
 	
 	function removeTickleTab(key, url) {
