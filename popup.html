@@ -235,11 +235,12 @@ input.hasDatepicker:hover{
 						var y = b[ii];
 						var kb = ai.key;
 						var datestr = getDateFromKey(kb);
+						//alert(y.title + kb);
 						printList(content,
 							datestr,
 							shortenTabTitle(y.title),
 							y.title,
-							function(dateText){changeDate(dateText, kb, y.url, y.title)},
+							bindChangeDate(kb, y.url, y.title),
 							bindOpenTickleTab(kb, y.url),
 							bindRemoveTickleTab(kb, y.url, y.title)
 						);
@@ -257,7 +258,8 @@ input.hasDatepicker:hover{
 		var storeDate = getKeyFromDate(dateText);
 		chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
 		chrome.extension.getBackgroundPage().STORAGE.addTickleTab(storeDate, url, title);
-		window.close();
+		updateTodayList();
+		updateDashboard();
 	}
 
 	function changeLabel(oldDate, newDate, title){
@@ -271,6 +273,18 @@ input.hasDatepicker:hover{
 	function bindOpenTickleTab(key, url) {
 		return function() {
 			openTickleTab(key, url);
+		};
+	}
+	
+	function bindChangeDate(key, url, title) {
+		return function(dateText) {
+			changeDate(dateText, key, url, title)
+		};
+	}
+
+	function bindChangeLabel(datestr, label) {
+		return function(dateText){
+			changeLabel(datestr, dateText, label)
 		};
 	}
 
@@ -366,7 +380,7 @@ input.hasDatepicker:hover{
 							datestr,
 							label,
 							label,
-							function(dateText){changeLabel(datestr, dateText, label)},
+							bindChangeLabel(datestr, label),
 							bindAddTickleTab(a.key),
 							bindRemoveDateLabel(a.key, label)
 						);
