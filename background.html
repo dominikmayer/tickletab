@@ -2,7 +2,14 @@
 <head>
 <script type="text/javascript">
 
+var iStorageType = 1;						// 2 := Storage in Bookmarks
+
+var sBookmarkRootId = null;	
+var sBookmarkRootTitle = "TickleTabs";
+
 var STORAGE = function () {
+	
+	
 	// private functions and properties
 	var KEY_PREFIX = "tickle_";
 	var DATE_LABEL_KEY_PREFIX = "dlabel_tickle_";
@@ -67,39 +74,47 @@ var STORAGE = function () {
      	     	     	     return "empty tabtitle param";
      	     	     }     	
      	     	     
-     	     	     var a = this.getObject(KEY_PREFIX + key);     
-     	     	     
-     	     	     // log("saved value : " + a); 
-     	     	     
-     	     	     if ( a == null ) {
-     	     	     	     // make new one 
-     	     	     	     // log("make new for key: " + key); 
-     	     	     	     a = [];
-     	     	     	     a.push({'url' : url , 'title' : tabtitle});     		
-     	     	     } else {
-     	     	     	     // add to the existing one
-     	     	     	     // merge if the url is the same
-     	     	     	     var p = null;
-     	     	     	     
-     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
-     	     	     	     	     var x = a[i];
-     	     	     	     	     if (x.url == url) {
-     	     	     	     	     	     p = x; 
-     	     	     	     	     	     break;
-     	     	     	     	     }
-     	     	     	     }
-     	     	     	     
-     	     	     	     // log("tickle for url : " + url + " = " + p); 
-     	     	     	     
-     	     	     	     if( p == null) {
-     	     	     	     	     // append new one
-     	     	     	     	     a.push({'url' : url , 'title' : tabtitle}); 
-     	     	     	     } else {			
-     	     	     	     	     p.title = tabtitle; 
-     	     	     	     }     		
+     	     	     if (iStorageType == 2) {
+     	     	    	 // Store in bookmarks
+     			    	chrome.bookmarks.create({"parentId": sBookmarkRootId, "title": tabtitle, "url": url}, function(jNode) {});
+
+     	     	    	 
+     	     	     } else {     	     	    
+     	     	    	 // Store in local Storage
+	     	     	     var a = this.getObject(KEY_PREFIX + key);     
+	     	     	     
+	     	     	     // log("saved value : " + a); 
+	     	     	     
+	     	     	     if ( a == null ) {
+	     	     	     	     // make new one 
+	     	     	     	     // log("make new for key: " + key); 
+	     	     	     	     a = [];
+	     	     	     	     a.push({'url' : url , 'title' : tabtitle});     		
+	     	     	     } else {
+	     	     	     	     // add to the existing one
+	     	     	     	     // merge if the url is the same
+	     	     	     	     var p = null;
+	     	     	     	     
+	     	     	     	     for(var i = 0, l = a.length; i < l; i++ ) {
+	     	     	     	     	     var x = a[i];
+	     	     	     	     	     if (x.url == url) {
+	     	     	     	     	     	     p = x; 
+	     	     	     	     	     	     break;
+	     	     	     	     	     }
+	     	     	     	     }
+	     	     	     	     
+	     	     	     	     // log("tickle for url : " + url + " = " + p); 
+	     	     	     	     
+	     	     	     	     if( p == null) {
+	     	     	     	     	     // append new one
+	     	     	     	     	     a.push({'url' : url , 'title' : tabtitle}); 
+	     	     	     	     } else {			
+	     	     	     	     	     p.title = tabtitle; 
+	     	     	     	     }     		
+	     	     	     }
+	     	     	     this.setObject(KEY_PREFIX + key, a);
+	     	     	     updateBadgeText();
      	     	     }
-     	     	     this.setObject(KEY_PREFIX + key, a);
-     	     	     updateBadgeText();
      	       },
      	       
      	     /**
@@ -315,6 +330,30 @@ function init(){
 	chrome.browserAction.setBadgeBackgroundColor({color:[255, 206, 10, 255]});
 	chrome.browserAction.setBadgeText({
 			text: ""});
+	
+	// If Storage in bookmarks ...
+	if (iStorageType == 2) {
+		// Create a root node if no one exists.
+		chrome.bookmarks.getChildren('1', function(ajNode) {
+			// Check if a root node already exists.
+	        for (i = 0; i < ajNode.length; i++) {
+	            if (ajNode[i].title == sBookmarkRootTitle) {
+	            	sBookmarkRootId = ajNode[i].id;
+	            	break;	            	
+	            }
+	        }
+	        
+		    // If no root node was found ...
+		    if (sBookmarkRootId == null) {
+		    	// ... create one
+		    	chrome.bookmarks.create({"parentId": "1", "title": sBookmarkRootTitle}, function(jNode) {
+		    			sBookmarkRootId = jNode.id;
+					}
+			 	);
+		    }	        
+	    });
+	}
+	
 	startRequest();
 }
 
