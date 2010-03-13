@@ -59,6 +59,7 @@ input.hasDatepicker:hover{
 	//var addFunction = function(key) {addSingleTab(key)};
 	//var addFunction = function(key) {addMultipleTabs(key)};
 	var multiple_tabs = false;
+	var openInBackground = false;
 	$(function() {
 		//var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
 		//var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
@@ -195,6 +196,10 @@ input.hasDatepicker:hover{
 //		return d.getFullYear() + '' + mm +'' +  dd;
 //	};
 
+	function fillTodayArray() {
+		//for 
+	}
+
 	function updateTodayList() {
 		var key = chrome.extension.getBackgroundPage().getCurrentDateAsKey();
 		var a = chrome.extension.getBackgroundPage().STORAGE.getTickleTabs(key);
@@ -295,8 +300,11 @@ input.hasDatepicker:hover{
 	}
 	
 	function openAllTickleTabs() {
+		// open in background; otherwise: popup.html will close and terminate script
+		openInBackground = true;
 		// call on click for each node
-		$("#today-list-content a").click();
+		$("#today-list-content .listlink").click();
+		window.close();
 	}
 	
 	function openTickleTab(key, url) {
@@ -304,7 +312,7 @@ input.hasDatepicker:hover{
 			chrome.tabs.create({
 					'windowId' : focusedWindowId,
 					'url' : url,
-					'selected' : true
+					'selected' : !openInBackground
 			});
 			// remove tickle tab from storage
 			chrome.extension.getBackgroundPage().STORAGE.removeTickleTabs(key, url);
@@ -393,6 +401,7 @@ input.hasDatepicker:hover{
 						title: tooltip
 					})
 					.click(bindClick)
+					.addClass('listlink')
 				)
 			)
 			.append($('<td></td>')
