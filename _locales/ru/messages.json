@@ -14,7 +14,19 @@
 	"closeTabUntil": {
 		"message": "Отложить текущую закладку до..."
  	}, 	
-	"defineLabel": {
+	"closeSingleTabUntil": {
+		"message": "Отложить текущую закладку до..."
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Отложить все открытые закладки до..."
+ 	}, 	
+	"allTabs": {
+		"message": "Использовать все открытые закладки"
+ 	}, 	
+	"singleTab": {
+		"message": "Испоьзовать текущую закладку"
+ 	},
+ 	"defineLabel": {
 		"message": "Запомнить как (опционально)"
  	}, 	
 	"openAll": {
@@ -28,5 +40,9 @@
 	},
 	"changeDateTooltip": {
 		"message": "Изменить Дату"
+	},
+	"undo": {
+		"message": "Отменить"
 	}
+
 }
