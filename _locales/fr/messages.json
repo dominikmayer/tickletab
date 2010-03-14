@@ -1,0 +1,44 @@
+﻿{
+	"locale": {
+		"message": "fr"
+ 	},
+	"Name": {
+		"message": "TickleTab"
+ 	},
+ 	"Description": {
+ 		"message": "TickleTab implémente les Ticklers à la façon de GTD pour onglets."
+ 	},
+	"ActiveTabs": {
+		"message": "Les onglets pour aujourd'hui"
+ 	}, 	
+	"closeSingleTabUntil": {
+		"message": "Ferme l'onglet actuel jusqu'à"
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Ferme chaque onglet ouvert jusqu'à"
+ 	}, 	
+	"allTabs": {
+		"message": "Appliquer à tous les onglets"
+ 	}, 	
+	"singleTab": {
+		"message": "Appliquer à l'onglet actuel"
+ 	}, 	
+	"defineLabel": {
+		"message": "Enregistre le date sous (optionnel)"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "Tableau de bord"
+ 	}, 	 	
+	"openAll": {
+		"message": "Ouvre tous"
+ 	},
+	"deleteTooltip": {
+		"message": "Effacer"
+	},
+	"changeDateTooltip": {
+		"message": "Change le date"
+	},
+	"undo": {
+		"message": "Annuler"
+	}
+}

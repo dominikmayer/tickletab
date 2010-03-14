@@ -1,0 +1,44 @@
+{
+	"locale": {
+		"message": "pl"
+ 	},
+	"Name": {
+		"message": "TickleTab"
+ 	},
+ 	"Description": {
+ 		"message": "TickleTab przystosowuje GTD-podobne Ticklers dla wszystkich kart."
+ 	},
+	"ActiveTabs": {
+		"message": "Karty na dziś"
+ 	}, 	
+	"closeSingleTabUntil": {
+		"message": "Zamknij i zapamiętaj kartę na"
+ 	}, 	
+	"closeMultipleTabsUntil": {
+		"message": "Zamknij i zapamiętaj wszystkie karty na"
+ 	}, 	
+	"allTabs": {
+		"message": "Zastosuj do wszystkich kart"
+ 	}, 	
+	"singleTab": {
+		"message": "Zastosuj do tej karty"
+ 	}, 	
+	"defineLabel": {
+		"message": "Zapamiętaj datę jako (opcjonalny)"
+ 	}, 	
+	"TicklerDashboard": {
+		"message": "Podgląd"
+ 	}, 	 	
+	"openAll": {
+		"message": "Otwórz wszystkie"
+ 	},
+	"deleteTooltip": {
+		"message": "Usuń"
+	},
+	"changeDateTooltip": {
+		"message": "Zmień datę"
+	},
+	"undo": {
+		"message": "Powrót"
+	}
+}
