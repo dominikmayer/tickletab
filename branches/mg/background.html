@@ -289,18 +289,7 @@ function getLocalStorage() {
 	return STORAGE;
 }
 
-function showOptions() {
-	// If the extension has not been run before ...
-	if (! window.localStorage.already_run) {
-		// ... show options.html
-		chrome.tabs.create( {url : "options.html"} );
-		
-		window.localStorage.already_run = true;
-	}
-}
-
 function init(){
-	// showOptions();
 	
 	chrome.browserAction.setBadgeBackgroundColor({color:[255, 206, 10, 255]});
 	chrome.browserAction.setBadgeText({text: ""});
