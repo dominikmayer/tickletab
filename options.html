@@ -31,6 +31,13 @@ It saves all the tabs you don't need right now and presents them again at the sp
 <div>
   <input type="button" id="btnSave" onclick="save()" value="Save"/>
 </div>
+
+<br>
+
+<div>
+  <input type="button" id="btnExport" onclick="exportTabsToBookmarks()" value="Export Tickle Tabs to Bookmarks"/>
+</div>
+
 </div>
 
 <script>
@@ -62,6 +69,48 @@ function markDirty() {
 function markClean() {
   btnSave.disabled = true;
 }
+
+function exportTabsToBookmarks() {
+	var sBookmarkRootId = null;    
+	var sBookmarkRootTitle = "TickleTabs";
+	
+    // Create a bookmark root folder.
+    chrome.bookmarks.getChildren('1', function(ajNode) {
+        // Find an existing folder.
+        for (i = 0; i < ajNode.length; i++) {
+            if (ajNode[i].title == sBookmarkRootTitle) {
+                sBookmarkRootId = ajNode[i].id;
+                break;                  
+            }
+        }
+        
+        // If no folder was found ...
+        if (sBookmarkRootId == null) {
+            // ... create one and export tabs.
+            chrome.bookmarks.create({"parentId": "1", "title": sBookmarkRootTitle}, function(jNode) {
+            	    sBookmarkRootId = jNode.id;
+            	    
+                    var aaTabs = chrome.extension.getBackgroundPage().STORAGE.getAllTickleTabs();
+
+                    // For each date
+                    for (iDate in aaTabs) {
+                        // get key
+                        var sKeyFormatted = aaTabs[iDate].key.substr(0, 4) + "-" + aaTabs[iDate].key.substr(4, 2) + "-" + aaTabs[iDate].key.substr(6, 2);
+
+                        // For each tab
+                        for (iTab in aaTabs[iDate].value) {
+                            chrome.bookmarks.create({"parentId": sBookmarkRootId, "title": sKeyFormatted + " " + aaTabs[iDate].value[iTab].title, "url": aaTabs[iDate].value[iTab].url});
+                        }
+                    }
+                }
+            );
+        } else {
+            // ... exit.
+            alert("Bookmark folder '" + sBookmarkRootTitle + "' already exists.");
+        }  
+    });
+}
+
 </script>
 </body>
 
