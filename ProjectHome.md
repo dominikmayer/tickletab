@@ -1,0 +1,1 @@
+A Google Chrome Extension that implements Ticklers for Tabs.
